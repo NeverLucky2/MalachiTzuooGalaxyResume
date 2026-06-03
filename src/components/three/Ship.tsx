@@ -6,19 +6,14 @@ import {PLANETS} from '@/data/planets';
 import {PRESETS} from '@/lib/cameraPresets';
 import {radialCanvas} from '@/lib/procedural';
 import {
-  avoidanceControl,
   bezierPoint,
+  orbitPointFor,
   smoothstep,
   type MotionState,
-  type Obstacle,
 } from '@/lib/motion';
 import type {NavState} from '@/lib/navigation';
 
 const FWD = new THREE.Vector3(0, 0, 1);
-// Keep-out radius around the central star the ship's flight path must clear.
-const STAR_RADIUS = 26;
-// Extra margin added to each planet's size to form its keep-out radius.
-const PLANET_PAD = 4;
 
 type PositionsRef = {current: [number, number, number][]};
 
@@ -26,6 +21,11 @@ type PositionsRef = {current: [number, number, number][]};
  * Low-poly winged ship (forward = +Z). Geometry/materials ported verbatim from
  * the prototype. Per-frame: orbits the focused planet, merges in via shared
  * travelT, noses along its velocity, and scales per preset / landing.
+ *
+ * Ship is a PURE CONSUMER of trip state: it does NOT detect nav changes, reset
+ * travelT, or compute shipFrom/shipControl — CameraRig owns all of that (and runs
+ * before Ship; see Scene.tsx ordering). Each frame Ship just samples the bezier
+ * (shipFrom → shipControl → live orbit point) at the shared travelT.
  */
 export function Ship({
   nav,
@@ -83,18 +83,10 @@ export function Ship({
   const shipScale = useRef(0.42);
   // Initialized-once guard for the ship's starting position.
   const inited = useRef(false);
-  // Previous nav snapshot, to detect a "startMove" trip start each frame.
-  const prevNav = useRef<NavState | null>(null);
   // Scratch objects reused each frame.
   const orbitPt = useRef(new THREE.Vector3());
   const vel = useRef(new THREE.Vector3());
   const tmpQ = useRef(new THREE.Quaternion());
-  // Reusable star obstacle + per-planet obstacle pool (rebuilt at each trip
-  // start, so no allocation in the per-frame path).
-  const star = useRef<Obstacle>({center: new THREE.Vector3(0, 0, 0), radius: STAR_RADIUS});
-  const planetObs = useRef<Obstacle[]>(
-    PLANETS.map(() => ({center: new THREE.Vector3(), radius: 0})),
-  );
 
   useFrame((_, delta) => {
     const dt = Math.min(0.05, delta);
@@ -106,56 +98,22 @@ export function Ship({
 
     // Seed positions once so velocity orientation has a sane start.
     if (!inited.current) {
-      motion.shipPos.set(P[0] + Math.max(size * 1.45, 1.3), P[1] + size * 0.45, P[2]);
+      orbitPointFor(P, size, motion.orbAng, motion.shipPos);
       motion.shipFrom.copy(motion.shipPos);
       prevShipPos.current.copy(motion.shipPos);
       inited.current = true;
     }
 
-    // --- detect nav change → trip start; compute the flight control ONCE. ---
-    const prev = prevNav.current;
-    if (
-      prev &&
-      (prev.current !== nav.current ||
-        prev.landed !== nav.landed ||
-        prev.preset !== nav.preset)
-    ) {
-      // Snapshot the launch point (idempotent with CameraRig's snapshot).
-      motion.shipFrom.copy(motion.shipPos);
-      // Orbit point around the destination at this instant (uses current orbAng).
-      const rrS = Math.max(size * 1.45, 1.3);
-      orbitPt.current.set(
-        P[0] + Math.cos(motion.orbAng) * rrS,
-        P[1] + Math.sin(motion.orbAng) * rrS * 0.32 + size * 0.45,
-        P[2] + Math.sin(motion.orbAng) * rrS,
-      );
-      // Obstacles: the star + every planet EXCEPT the destination.
-      const obs: Obstacle[] = [star.current];
-      for (let i = 0; i < PLANETS.length; i++) {
-        if (i === nav.current) continue;
-        const o = planetObs.current[i];
-        const Pi = positionsRef.current[i];
-        o.center.set(Pi[0], Pi[1], Pi[2]);
-        o.radius = PLANETS[i].size + PLANET_PAD;
-        obs.push(o);
-      }
-      avoidanceControl(motion.shipFrom, orbitPt.current, obs, 3, motion.shipControl);
-    }
-    prevNav.current = nav;
-
-    // orbitPoint(P, n) from prototype.
+    // Advance the orbit angle (Ship is the SINGLE place orbAng advances; CameraRig
+    // only reads the current value at trip start) and compute the LIVE orbit point
+    // around the focused planet — the bezier's destination endpoint.
     motion.orbAng += dt * 1.4;
-    const rr = Math.max(size * 1.45, 1.3);
-    orbitPt.current.set(
-      P[0] + Math.cos(motion.orbAng) * rr,
-      P[1] + Math.sin(motion.orbAng) * rr * 0.32 + size * 0.45,
-      P[2] + Math.sin(motion.orbAng) * rr,
-    );
+    orbitPointFor(P, size, motion.orbAng, orbitPt.current);
 
     // Merge into orbit via shared travelT (slightly faster than camera: *1.12),
-    // along the flight path computed at trip start. With no obstacle on the way
-    // the control == midpoint (straight line); it swerves only to clear the star
-    // or a planet that lies on the path.
+    // along the flight path (shipFrom → shipControl → live orbit) computed once at
+    // trip start by CameraRig. With no obstacle on the way the control == midpoint
+    // (straight line); it swerves only to clear the star or a planet on the path.
     prevShipPos.current.copy(motion.shipPos);
     const eR = smoothstep(Math.min(1, motion.travelT * 1.12));
     bezierPoint(motion.shipFrom, motion.shipControl, orbitPt.current, eR, motion.shipPos);

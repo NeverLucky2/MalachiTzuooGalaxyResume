@@ -1,6 +1,12 @@
 import {describe, it, expect} from 'vitest';
 import * as THREE from 'three';
-import {smoothstep, bezierPoint, avoidanceControl, type Obstacle} from './motion';
+import {
+  smoothstep,
+  bezierPoint,
+  avoidanceControl,
+  orbitPointFor,
+  type Obstacle,
+} from './motion';
 
 const v = (x: number, y: number, z: number) => new THREE.Vector3(x, y, z);
 
@@ -42,6 +48,41 @@ describe('bezierPoint', () => {
   it('writes into the provided out vector and returns it', () => {
     const out = v(0, 0, 0);
     const r = bezierPoint(from, control, to, 0.5, out);
+    expect(r).toBe(out);
+  });
+});
+
+describe('orbitPointFor', () => {
+  it('matches the radius/bob/lift formula and accepts a tuple or Vector3', () => {
+    const size = 4;
+    const ang = 0.7;
+    const rr = Math.max(size * 1.45, 1.3);
+    const exp = v(
+      10 + Math.cos(ang) * rr,
+      2 + Math.sin(ang) * rr * 0.32 + size * 0.45,
+      -5 + Math.sin(ang) * rr,
+    );
+    const fromTuple = orbitPointFor([10, 2, -5], size, ang);
+    const fromVec = orbitPointFor(v(10, 2, -5), size, ang);
+    for (const p of [fromTuple, fromVec]) {
+      expect(p.x).toBeCloseTo(exp.x, 6);
+      expect(p.y).toBeCloseTo(exp.y, 6);
+      expect(p.z).toBeCloseTo(exp.z, 6);
+    }
+  });
+
+  it('clamps the orbit radius to a 1.3 floor for tiny planets', () => {
+    // size*1.45 = 0.145 < 1.3, so the radius floor applies at angle 0.
+    const p = orbitPointFor([0, 0, 0], 0.1, 0);
+    // cos(0)*rr = rr = 1.3 in x; sin(0)=0 so y = size*0.45, z = 0.
+    expect(p.x).toBeCloseTo(1.3, 6);
+    expect(p.y).toBeCloseTo(0.045, 6);
+    expect(p.z).toBeCloseTo(0, 6);
+  });
+
+  it('writes into the provided out vector and returns it', () => {
+    const out = v(0, 0, 0);
+    const r = orbitPointFor([1, 1, 1], 2, 0.3, out);
     expect(r).toBe(out);
   });
 });

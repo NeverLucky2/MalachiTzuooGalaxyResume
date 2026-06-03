@@ -25,6 +25,31 @@ export function bezierPoint(
   return out;
 }
 
+/**
+ * The ship's orbit point around a planet at a given orbit angle — the prototype's
+ * `orbitPoint(P, n)`. Orbits at radius `max(size*1.45, 1.3)` with a vertical bob
+ * (sin·0.32) plus a `size*0.45` lift. Shared by BOTH CameraRig (to snapshot the
+ * ship's trip target at trip start) and Ship (the live target each frame) so they
+ * agree on the same endpoint. Writes into `out` (no allocation) and returns it.
+ */
+export function orbitPointFor(
+  planetPos: [number, number, number] | THREE.Vector3,
+  size: number,
+  orbAng: number,
+  out: THREE.Vector3 = new THREE.Vector3(),
+): THREE.Vector3 {
+  const px = Array.isArray(planetPos) ? planetPos[0] : planetPos.x;
+  const py = Array.isArray(planetPos) ? planetPos[1] : planetPos.y;
+  const pz = Array.isArray(planetPos) ? planetPos[2] : planetPos.z;
+  const rr = Math.max(size * 1.45, 1.3);
+  out.set(
+    px + Math.cos(orbAng) * rr,
+    py + Math.sin(orbAng) * rr * 0.32 + size * 0.45,
+    pz + Math.sin(orbAng) * rr,
+  );
+  return out;
+}
+
 /** A spherical obstacle the flight path must clear. */
 export interface Obstacle {
   center: THREE.Vector3;

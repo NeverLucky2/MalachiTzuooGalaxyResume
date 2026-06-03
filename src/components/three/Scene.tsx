@@ -53,8 +53,12 @@ export function Scene({
           <Planets current={nav.current} positionsRef={positionsRef} onSelect={onSelect} />
           <Galaxies />
           <Comets />
-          <Ship nav={nav} positionsRef={positionsRef} motion={motion.current} />
+          {/* ORDER MATTERS: CameraRig MUST render before Ship. R3F runs
+              same-priority useFrame callbacks in mount (JSX) order, and CameraRig
+              is the sole owner of trip-start — it must snapshot motion.shipFrom
+              from the ship's OLD position before Ship moves it. See CameraRig.tsx. */}
           <CameraRig nav={nav} positionsRef={positionsRef} motion={motion.current} />
+          <Ship nav={nav} positionsRef={positionsRef} motion={motion.current} />
           <PlanetLabels
             current={nav.current}
             landed={nav.landed}
