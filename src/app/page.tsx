@@ -4,8 +4,11 @@ import {GalaxyExperience} from '@/components/GalaxyExperience';
 export default function Page() {
   return (
     <>
-      {/* SSR, crawlable, works without JS; the 3D scene mounts over it when enabled */}
-      <FallbackResume />
+      {/* SSR, crawlable, works without JS. Hidden via [data-mode="galaxy"] CSS
+          while the 3D scene is up, so its text never bleeds through the canvas. */}
+      <div id="resume-2d">
+        <FallbackResume />
+      </div>
       <GalaxyExperience />
     </>
   );

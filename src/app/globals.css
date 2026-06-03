@@ -8,3 +8,15 @@
 body {
   font-family: var(--font-inter, Inter, system-ui, sans-serif);
 }
+
+/* Opaque dark backdrop so the transparent galaxy canvas never reveals page text. */
+html {
+  background: #05030f;
+}
+
+/* Galaxy view: hide the SSR 2D résumé so its text can't bleed through the canvas.
+   With no JS, data-mode unset, or data-mode="resume", the résumé stays visible
+   (good for crawlers and résumé mode). */
+[data-mode='galaxy'] #resume-2d {
+  display: none;
+}
