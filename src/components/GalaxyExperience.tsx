@@ -34,14 +34,14 @@ export function GalaxyExperience() {
     if (shouldUse3D(c)) setMode('galaxy');
   }, []);
 
-  // Mirror the mode onto <html> so CSS can hide the SSR résumé under the canvas.
+  // Mirror the mode onto <html> so CSS can hide the SSR resume under the canvas.
   useEffect(() => {
     document.documentElement.dataset.mode = mode;
   }, [mode]);
 
-  // Switch to the 2D résumé and move keyboard focus to its main heading so
+  // Switch to the 2D resume and move keyboard focus to its main heading so
   // keyboard / screen-reader users land in the now-visible content. Deferred a
-  // frame so the résumé is rendered/visible before we focus it.
+  // frame so the resume is rendered/visible before we focus it.
   const showResume = () => {
     setMode('resume');
     requestAnimationFrame(() => {
@@ -60,7 +60,7 @@ export function GalaxyExperience() {
     );
   }
 
-  // Résumé mode: only offer the galaxy toggle when WebGL is actually available.
+  // Resume mode: only offer the galaxy toggle when WebGL is actually available.
   if (!caps.hasWebGL) return null;
   return (
     <button

@@ -5,7 +5,7 @@ describe('CONTENT', () => {
   it('has content for every section', () => {
     expect(Object.keys(CONTENT).sort()).toEqual(['about','contact','proj','resume','skills','xp']);
   });
-  it('résumé section offers the PDF download', () => {
+  it('resume section offers the PDF download', () => {
     const blocks = CONTENT.resume;
     expect(blocks.some(b => b.kind === 'download' && b.href.endsWith('.pdf'))).toBe(true);
   });

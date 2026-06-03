@@ -17,13 +17,13 @@ const inter = Inter({
 const SITE_URL = 'https://malachitzuoo.com';
 const TITLE = 'Malachi Tzuoo — Software Engineer';
 const DESCRIPTION =
-  'Software Engineer based in Chicago, IL. AWS Certified Developer. Python, TypeScript, React, cloud-native CI/CD, and generative-AI tooling. Explore my résumé as an interactive 3D solar system.';
+  'Software Engineer based in Chicago, IL. AWS Certified Developer. Python, TypeScript, React, cloud-native CI/CD, and generative-AI tooling. Explore my resume as an interactive 3D solar system.';
 
 export const metadata: Metadata = {
   metadataBase: new URL(SITE_URL),
   title: TITLE,
   description: DESCRIPTION,
-  applicationName: 'Malachi Tzuoo — Galaxy Résumé',
+  applicationName: 'Malachi Tzuoo — Galaxy Resume',
   authors: [{name: 'Malachi Tzuoo'}],
   creator: 'Malachi Tzuoo',
   keywords: [
@@ -39,14 +39,14 @@ export const metadata: Metadata = {
     'LangChain',
     'CI/CD',
     'Chicago',
-    'Résumé',
+    'Resume',
     'Portfolio',
   ],
   alternates: {canonical: '/'},
   openGraph: {
     type: 'website',
     url: SITE_URL,
-    siteName: 'Malachi Tzuoo — Galaxy Résumé',
+    siteName: 'Malachi Tzuoo — Galaxy Resume',
     title: TITLE,
     description: DESCRIPTION,
     locale: 'en_US',

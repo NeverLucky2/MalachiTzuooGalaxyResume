@@ -2,7 +2,7 @@ import {PLANETS} from '@/data/planets';
 import {CONTENT} from '@/data/content';
 import {ContentRenderer} from './ContentRenderer';
 
-/** Stable id for the résumé's main heading; the galaxy "skip to résumé" control
+/** Stable id for the resume's main heading; the galaxy "skip to resume" control
  *  moves keyboard focus here when switching to the 2D view. */
 export const RESUME_HEADING_ID = 'resume-heading';
 

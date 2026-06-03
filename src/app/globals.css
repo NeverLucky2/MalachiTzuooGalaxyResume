@@ -18,9 +18,9 @@ html {
   background: #05030f;
 }
 
-/* Galaxy view: hide the SSR 2D résumé so its text can't bleed through the canvas.
-   With no JS, data-mode unset, or data-mode="resume", the résumé stays visible
-   (good for crawlers and résumé mode). */
+/* Galaxy view: hide the SSR 2D resume so its text can't bleed through the canvas.
+   With no JS, data-mode unset, or data-mode="resume", the resume stays visible
+   (good for crawlers and resume mode). */
 [data-mode='galaxy'] #resume-2d {
   display: none;
 }

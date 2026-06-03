@@ -10,13 +10,13 @@ vi.mock('@/lib/capabilities', () => ({
   detectCaps: () => caps.value,
   shouldUse3D: () => caps.use3D,
 }));
-// Stub Scene with a working "skip to résumé" button so we can exercise the skip
+// Stub Scene with a working "skip to resume" button so we can exercise the skip
 // flow + focus management without mounting the real 3D canvas.
 vi.mock('@/components/three/Scene', () => ({
   Scene: ({onSkip}: {onSkip: () => void}) => (
     <div data-testid="scene">
       <button type="button" onClick={onSkip}>
-        📄 RÉSUMÉ VIEW
+        📄 RESUME VIEW
       </button>
     </div>
   ),
@@ -42,7 +42,7 @@ describe('GalaxyExperience', () => {
     expect(screen.queryByRole('button', {name: /galaxy view/i})).toBeNull();
   });
 
-  it('offers the Galaxy-view toggle (résumé mode) when WebGL is available but 3D is not auto-enabled', () => {
+  it('offers the Galaxy-view toggle (resume mode) when WebGL is available but 3D is not auto-enabled', () => {
     caps.value = {hasWebGL: true, reducedMotion: true, coarsePointer: false, width: 1280};
     caps.use3D = false;
     render(<GalaxyExperience />);
@@ -58,7 +58,7 @@ describe('GalaxyExperience', () => {
     await waitFor(() => expect(screen.getByTestId('scene')).toBeInTheDocument());
   });
 
-  it('skip-to-résumé switches to the 2D view and focuses its heading', async () => {
+  it('skip-to-resume switches to the 2D view and focuses its heading', async () => {
     caps.value = {hasWebGL: true, reducedMotion: false, coarsePointer: false, width: 1280};
     caps.use3D = true;
     // rAF runs the focus callback; drive it deterministically.
@@ -66,14 +66,14 @@ describe('GalaxyExperience', () => {
       cb(0);
       return 0;
     });
-    // The page renders the SSR résumé (with the focus target heading) alongside.
+    // The page renders the SSR resume (with the focus target heading) alongside.
     render(
       <>
         <FallbackResume />
         <GalaxyExperience />
       </>,
     );
-    const skip = await screen.findByRole('button', {name: /résumé view/i});
+    const skip = await screen.findByRole('button', {name: /resume view/i});
     skip.click();
     await waitFor(() => expect(screen.queryByTestId('scene')).toBeNull());
     const heading = screen.getByRole('heading', {name: /malachi tzuoo/i});

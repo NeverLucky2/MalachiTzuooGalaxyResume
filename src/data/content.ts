@@ -42,7 +42,7 @@ export const CONTENT: Record<SectionId, ContentBlock[]> = {
   resume: [
     {kind:'cards', items:[{label:'🏅 AWS Certified Developer – Associate', value:'Valid 2024 – 2027. EC2, Lambda, DynamoDB, SNS/SQS, CodePipeline.'}]},
     {kind:'paragraph', text:'Grab the full PDF for the complete history.'},
-    {kind:'download', label:'⤓ Download résumé (PDF)', href:'/assets/Tzuoo_Malachi_Resume_.pdf'},
+    {kind:'download', label:'⤓ Download resume (PDF)', href:'/assets/Tzuoo_Malachi_Resume_.pdf'},
   ],
   contact: [
     {kind:'links', items:[

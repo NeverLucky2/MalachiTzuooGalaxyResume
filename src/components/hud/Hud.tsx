@@ -7,7 +7,7 @@ import {DetailPanel} from './DetailPanel';
 /**
  * Full DOM overlay HUD (rendered as a sibling of <Canvas>, NOT inside it).
  * Name/level/cert chips, starmap legend, bottom control bar, camera-angle view
- * button, boost hint, and a skip-to-résumé button. The control bar / labels /
+ * button, boost hint, and a skip-to-resume button. The control bar / labels /
  * speed hint hide while landed (only the DetailPanel shows). Styling ported from
  * the prototype's `.topbar` / `.controls` / `.detail`.
  */
@@ -39,7 +39,7 @@ export function Hud({
           <span className="bg-gradient-to-r from-[#21e6ff] to-[#ff3df0] bg-clip-text font-display text-base font-black tracking-wide text-transparent">
             MALACHI TZUOO
           </span>
-          <Chip>LV.25</Chip>
+          <Chip>LV.26</Chip>
           <Chip>CLASS · SOFTWARE ENGINEER</Chip>
           <Chip>🛰 AWS CERTIFIED</Chip>
         </div>
@@ -94,7 +94,7 @@ export function Hud({
         </span>
 
         <CtrlButton className="ml-auto" onClick={onSkip}>
-          📄 RÉSUMÉ VIEW
+          📄 RESUME VIEW
         </CtrlButton>
       </div>
 
