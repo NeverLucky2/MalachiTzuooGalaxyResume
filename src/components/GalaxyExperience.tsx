@@ -9,9 +9,14 @@ const Scene = dynamic(() => import('@/components/three/Scene').then(m => m.Scene
 export function GalaxyExperience() {
   const [enabled, setEnabled] = useState(false);
   const [forced, setForced] = useState(false);
+  // Skip → unmount the 3D scene, revealing the SSR'd FallbackResume beneath it.
+  const [show2D, setShow2D] = useState(false);
   const [nav, dispatch] = useReducer(navReducer, undefined, initialNav);
 
   useEffect(() => { if (shouldUse3D(detectCaps())) setEnabled(true); }, []);
+
+  // Skipped to the 2D résumé — leave the SSR fallback visible.
+  if (show2D) return null;
 
   if (!enabled && !forced) {
     return (
@@ -23,5 +28,5 @@ export function GalaxyExperience() {
       </div>
     );
   }
-  return <Scene nav={nav} dispatch={dispatch} />;
+  return <Scene nav={nav} dispatch={dispatch} onSkip={() => setShow2D(true)} />;
 }

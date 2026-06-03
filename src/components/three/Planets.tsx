@@ -10,9 +10,12 @@ type PositionsRef = {current: [number, number, number][]};
 export function Planets({
   current,
   positionsRef,
+  onSelect,
 }: {
   current: number;
   positionsRef: PositionsRef;
+  /** Click-to-fly handler invoked with the clicked planet's index. */
+  onSelect?: (index: number) => void;
 }) {
   const groups = useRef<(THREE.Group | null)[]>([]);
   const ang = useRef<number[]>(PLANETS.map((_, i) => i * 1.1));
@@ -65,7 +68,11 @@ export function Planets({
             groups.current[i] = el;
           }}
         >
-          <Planet planet={p} selected={i === current} />
+          <Planet
+            planet={p}
+            selected={i === current}
+            onSelect={onSelect ? () => onSelect(i) : undefined}
+          />
         </group>
       ))}
     </>

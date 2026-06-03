@@ -1,6 +1,6 @@
 'use client';
 import {useRef, useMemo} from 'react';
-import {useFrame} from '@react-three/fiber';
+import {useFrame, type ThreeEvent} from '@react-three/fiber';
 import * as THREE from 'three';
 import type {Planet as PlanetType} from '@/data/types';
 import {planetCanvas, cloudCanvas} from '@/lib/procedural';
@@ -8,9 +8,11 @@ import {planetCanvas, cloudCanvas} from '@/lib/procedural';
 interface PlanetProps {
   planet: PlanetType;
   selected: boolean;
+  /** Click-to-fly handler (fired on the main planet mesh). */
+  onSelect?: () => void;
 }
 
-export function Planet({planet}: PlanetProps) {
+export function Planet({planet, onSelect}: PlanetProps) {
   const meshRef = useRef<THREE.Mesh>(null);
   const cloudsRef = useRef<THREE.Mesh>(null);
   const moonRef = useRef<THREE.Mesh>(null);
@@ -63,10 +65,26 @@ export function Planet({planet}: PlanetProps) {
     }
   });
 
+  const handleClick = (e: ThreeEvent<MouseEvent>) => {
+    if (!onSelect) return;
+    e.stopPropagation();
+    onSelect();
+  };
+
   return (
     <group>
       {/* Main planet sphere */}
-      <mesh ref={meshRef} rotation={[0, 0, 0.2]}>
+      <mesh
+        ref={meshRef}
+        rotation={[0, 0, 0.2]}
+        onClick={handleClick}
+        onPointerOver={() => {
+          if (onSelect) document.body.style.cursor = 'pointer';
+        }}
+        onPointerOut={() => {
+          if (onSelect) document.body.style.cursor = 'auto';
+        }}
+      >
         <sphereGeometry args={[planet.size, 48, 48]} />
         <meshStandardMaterial
           map={planetTex}
