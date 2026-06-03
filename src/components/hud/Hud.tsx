@@ -1,0 +1,142 @@
+'use client';
+import {PLANETS} from '@/data/planets';
+import type {NavState, NavAction} from '@/lib/navigation';
+import {StarmapLegend} from './StarmapLegend';
+import {DetailPanel} from './DetailPanel';
+
+/**
+ * Full DOM overlay HUD (rendered as a sibling of <Canvas>, NOT inside it).
+ * Name/level/cert chips, starmap legend, bottom control bar, camera-angle view
+ * button, boost hint, and a skip-to-résumé link. The control bar / labels /
+ * speed hint hide while landed (only the DetailPanel shows). Styling ported from
+ * the prototype's `.topbar` / `.controls` / `.detail`.
+ */
+export function Hud({
+  nav,
+  dispatch,
+  onSkip,
+  boost = false,
+}: {
+  nav: NavState;
+  dispatch: React.Dispatch<NavAction>;
+  onSkip: () => void;
+  /** Reflects the live Shift-boost state for the speed hint. */
+  boost?: boolean;
+}) {
+  const n = PLANETS.length;
+  const atFirst = nav.current === 0;
+  const atLast = nav.current === n - 1;
+
+  return (
+    <div className="pointer-events-none fixed inset-0 z-20">
+      {/* Top bar: name chips (left) + legend (right). Hidden while landed. */}
+      <div
+        className={`absolute inset-x-0 top-0 flex items-start justify-between gap-3 p-4 px-5 transition-opacity duration-300 ${
+          nav.landed ? 'pointer-events-none opacity-0' : 'opacity-100'
+        }`}
+      >
+        <div className="pointer-events-auto flex items-center gap-3 rounded-[14px] border border-[#21e6ff]/50 bg-[#0a0a1f]/60 px-4 py-[10px] shadow-[0_0_18px_rgba(33,230,255,.35)] backdrop-blur-md">
+          <span className="bg-gradient-to-r from-[#21e6ff] to-[#ff3df0] bg-clip-text font-[Orbitron] text-base font-black tracking-wide text-transparent">
+            MALACHI TZUOO
+          </span>
+          <Chip>LV.25</Chip>
+          <Chip>CLASS · SOFTWARE ENGINEER</Chip>
+          <Chip>🛰 AWS CERTIFIED</Chip>
+        </div>
+        <div className="pointer-events-auto">
+          <StarmapLegend nav={nav} dispatch={dispatch} />
+        </div>
+      </div>
+
+      {/* Boost hint. Hidden while landed. */}
+      <div
+        className={`absolute bottom-[66px] left-[22px] font-[Orbitron] text-[10px] tracking-wide transition-opacity duration-300 ${
+          nav.landed ? 'opacity-0' : ''
+        } ${
+          boost
+            ? 'text-white opacity-100 [text-shadow:0_0_12px_#ff3df0]'
+            : 'text-[#21e6ff] opacity-80 [text-shadow:0_0_8px_rgba(33,230,255,.6)]'
+        }`}
+      >
+        ⇧ HOLD <b className="text-white">SHIFT</b> — BOOST SPEED
+      </div>
+
+      {/* Bottom control bar. Hidden while landed. */}
+      <div
+        className={`absolute inset-x-0 bottom-0 flex flex-wrap items-end gap-[10px] px-[22px] pb-[18px] pt-3 transition-opacity duration-300 ${
+          nav.landed ? 'pointer-events-none opacity-0' : 'pointer-events-auto opacity-100'
+        }`}
+      >
+        <CtrlButton onClick={() => dispatch({type: 'prev', n})} disabled={atFirst}>
+          ◀ INWARD
+        </CtrlButton>
+        <CtrlButton land onClick={() => dispatch({type: 'land'})}>
+          LAND ▾
+        </CtrlButton>
+        <CtrlButton onClick={() => dispatch({type: 'next', n})} disabled={atLast}>
+          OUTWARD ▶
+        </CtrlButton>
+
+        {/* Camera angle caption above the view button */}
+        <span className="inline-flex flex-col items-center gap-[3px]">
+          <span className="whitespace-nowrap font-[Orbitron] text-[9px] tracking-wide text-[#21e6ff] opacity-65 [text-shadow:0_0_6px_rgba(33,230,255,.5)]">
+            CAMERA ANGLE · V
+          </span>
+          <CtrlButton onClick={() => dispatch({type: 'cyclePreset'})}>
+            👁 {nav.preset}
+          </CtrlButton>
+        </span>
+
+        <span className="text-xs opacity-65">
+          ← → fly &nbsp;·&nbsp; Enter/↑ land &nbsp;·&nbsp; V cycles view &nbsp;·&nbsp; drag to look
+        </span>
+
+        <button
+          type="button"
+          onClick={onSkip}
+          className="ml-auto border-b border-dotted border-[#21e6ff] pb-[2px] text-xs font-bold text-[#21e6ff]"
+        >
+          Skip to résumé / PDF ⤓
+        </button>
+      </div>
+
+      {/* Landed detail panel */}
+      <DetailPanel nav={nav} onTakeOff={() => dispatch({type: 'takeOff'})} />
+    </div>
+  );
+}
+
+function Chip({children}: {children: React.ReactNode}) {
+  return (
+    <span className="rounded-full border border-[#21e6ff]/40 px-[9px] py-[3px] text-[11px] opacity-90">
+      {children}
+    </span>
+  );
+}
+
+function CtrlButton({
+  children,
+  onClick,
+  disabled,
+  land,
+}: {
+  children: React.ReactNode;
+  onClick: () => void;
+  disabled?: boolean;
+  land?: boolean;
+}) {
+  return (
+    <button
+      type="button"
+      onClick={onClick}
+      disabled={disabled}
+      className={`pointer-events-auto rounded-xl border px-4 py-3 font-[Orbitron] text-[13px] font-bold text-[#e7f6ff] disabled:cursor-default disabled:opacity-35 disabled:shadow-none ${
+        land
+          ? 'border-[#ff3df0] bg-gradient-to-r from-[#ff3df0]/30 to-[#21e6ff]/30 text-white shadow-[0_0_16px_#ff3df0]'
+          : 'border-[#21e6ff]/50 bg-[#0a0a1f]/60 shadow-[0_0_14px_rgba(33,230,255,.3)]'
+      }`}
+    >
+      {children}
+    </button>
+  );
+}
