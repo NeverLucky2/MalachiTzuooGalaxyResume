@@ -7,7 +7,7 @@ import {DetailPanel} from './DetailPanel';
 /**
  * Full DOM overlay HUD (rendered as a sibling of <Canvas>, NOT inside it).
  * Name/level/cert chips, starmap legend, bottom control bar, camera-angle view
- * button, boost hint, and a skip-to-résumé link. The control bar / labels /
+ * button, boost hint, and a skip-to-résumé button. The control bar / labels /
  * speed hint hide while landed (only the DetailPanel shows). Styling ported from
  * the prototype's `.topbar` / `.controls` / `.detail`.
  */
@@ -91,13 +91,9 @@ export function Hud({
           ← → fly &nbsp;·&nbsp; Enter/↑ land &nbsp;·&nbsp; V cycles view &nbsp;·&nbsp; drag to look
         </span>
 
-        <button
-          type="button"
-          onClick={onSkip}
-          className="ml-auto border-b border-dotted border-[#21e6ff] pb-[2px] text-xs font-bold text-[#21e6ff]"
-        >
-          Skip to résumé / PDF ⤓
-        </button>
+        <CtrlButton className="ml-auto" onClick={onSkip}>
+          📄 RÉSUMÉ VIEW
+        </CtrlButton>
       </div>
 
       {/* Landed detail panel */}
@@ -119,11 +115,14 @@ function CtrlButton({
   onClick,
   disabled,
   land,
+  className = '',
 }: {
   children: React.ReactNode;
   onClick: () => void;
   disabled?: boolean;
   land?: boolean;
+  /** Extra utility classes (e.g. `ml-auto` to push the button to the right). */
+  className?: string;
 }) {
   return (
     <button
@@ -134,7 +133,7 @@ function CtrlButton({
         land
           ? 'border-[#ff3df0] bg-gradient-to-r from-[#ff3df0]/30 to-[#21e6ff]/30 text-white shadow-[0_0_16px_#ff3df0]'
           : 'border-[#21e6ff]/50 bg-[#0a0a1f]/60 shadow-[0_0_14px_rgba(33,230,255,.3)]'
-      }`}
+      } ${className}`}
     >
       {children}
     </button>
