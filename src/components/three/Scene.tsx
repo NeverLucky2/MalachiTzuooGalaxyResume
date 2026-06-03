@@ -10,6 +10,7 @@ import {Planets} from './Planets';
 import {Galaxies} from './Galaxies';
 import {Comets} from './Comets';
 import {Ship} from './Ship';
+import {CameraRig} from './CameraRig';
 
 export function Scene({nav, dispatch: _dispatch}: {nav: NavState; dispatch: React.Dispatch<NavAction>}) {
   const positionsRef = useRef<[number, number, number][]>(PLANETS.map(() => [0, 0, 0]));
@@ -33,7 +34,8 @@ export function Scene({nav, dispatch: _dispatch}: {nav: NavState; dispatch: Reac
         <Galaxies />
         <Comets />
         <Ship nav={nav} positionsRef={positionsRef} motion={motion.current} />
-        {/* CameraRig (Task 14) + HUD added next */}
+        <CameraRig nav={nav} positionsRef={positionsRef} motion={motion.current} />
+        {/* HUD added in a later task */}
       </Canvas>
     </div>
   );
