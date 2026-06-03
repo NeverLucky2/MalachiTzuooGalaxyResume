@@ -1,5 +1,5 @@
 'use client';
-import {useMemo} from 'react';
+import {useEffect, useMemo} from 'react';
 import * as THREE from 'three';
 import {galaxyCanvas} from '@/lib/procedural';
 
@@ -21,6 +21,9 @@ export function Galaxies() {
     t.colorSpace = THREE.SRGBColorSpace;
     return t;
   }, []);
+
+  // Imperatively-created texture — dispose on unmount (R3F won't).
+  useEffect(() => () => tex.dispose(), [tex]);
 
   const galaxies = useMemo<GalaxyDatum[]>(() => {
     const result: GalaxyDatum[] = [];

@@ -1,5 +1,5 @@
 'use client';
-import {useRef, useMemo} from 'react';
+import {useRef, useMemo, useEffect} from 'react';
 import {useFrame, type ThreeEvent} from '@react-three/fiber';
 import * as THREE from 'three';
 import type {Planet as PlanetType} from '@/data/types';
@@ -43,6 +43,12 @@ export function Planet({planet, onSelect}: PlanetProps) {
     t.colorSpace = THREE.SRGBColorSpace;
     return t;
   }, [planet.moon]);
+
+  // These CanvasTextures are created imperatively (not JSX resources), so R3F
+  // won't auto-dispose them — release them on unmount / when they're rebuilt.
+  useEffect(() => () => planetTex.dispose(), [planetTex]);
+  useEffect(() => () => cloudTex?.dispose(), [cloudTex]);
+  useEffect(() => () => moonTex?.dispose(), [moonTex]);
 
   // Per-frame animation: spin planet, clouds, moon orbit
   useFrame((_, dt) => {

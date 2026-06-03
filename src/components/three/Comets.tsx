@@ -1,5 +1,5 @@
 'use client';
-import {useRef, useMemo} from 'react';
+import {useRef, useMemo, useEffect} from 'react';
 import {useFrame} from '@react-three/fiber';
 import * as THREE from 'three';
 import {radialCanvas} from '@/lib/procedural';
@@ -7,6 +7,8 @@ import {radialCanvas} from '@/lib/procedural';
 const COMET_COUNT = 4;
 const TRAIL_POINTS = 22;
 const BOX = 540;
+// Comet drift is damped to this fraction of normal under prefers-reduced-motion.
+const REDUCED_MOTION_FACTOR = 0.15;
 
 interface CometData {
   p: THREE.Vector3;
@@ -22,7 +24,7 @@ function randEdge(): THREE.Vector3 {
   ).multiplyScalar(BOX);
 }
 
-export function Comets() {
+export function Comets({reducedMotion = false}: {reducedMotion?: boolean} = {}) {
   // Glow texture for comet heads
   const glowTex = useMemo(() => {
     const cv = radialCanvas(
@@ -68,10 +70,19 @@ export function Comets() {
       geo.setAttribute('position', new THREE.BufferAttribute(arr, 3));
       return geo;
     });
-  }, []); // eslint-disable-line react-hooks/exhaustive-deps
+  }, []);
 
+  // Imperatively-created glow texture + trail geometries — dispose on unmount.
+  useEffect(() => {
+    return () => {
+      glowTex.dispose();
+      trailGeos.forEach((g) => g.dispose());
+    };
+  }, [glowTex, trailGeos]);
+
+  const motionScale = reducedMotion ? REDUCED_MOTION_FACTOR : 1;
   useFrame((_, dt) => {
-    const d = Math.min(0.05, dt);
+    const d = Math.min(0.05, dt) * motionScale;
     const comets = cometsRef.current;
 
     for (let ci = 0; ci < COMET_COUNT; ci++) {

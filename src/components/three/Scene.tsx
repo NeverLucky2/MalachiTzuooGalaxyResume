@@ -1,5 +1,5 @@
 'use client';
-import {useRef} from 'react';
+import {useEffect, useRef, useState} from 'react';
 import {Canvas} from '@react-three/fiber';
 import type {NavState, NavAction} from '@/lib/navigation';
 import {PLANETS} from '@/data/planets';
@@ -19,16 +19,30 @@ export function Scene({
   nav,
   dispatch,
   onSkip,
+  reducedMotion = false,
 }: {
   nav: NavState;
   dispatch: React.Dispatch<NavAction>;
   onSkip: () => void;
+  /** When true (prefers-reduced-motion + forced galaxy), damp ambient drift. */
+  reducedMotion?: boolean;
 }) {
   const positionsRef = useRef<[number, number, number][]>(PLANETS.map(() => [0, 0, 0]));
   // Shared motion state (travelT, from-snapshots, look/ship pos, free-look) that
   // CameraRig and Ship both read/write each frame so they stay in lockstep.
   // Controls set shiftHeld/yaw/pitch on it.
   const motion = useRef(createMotionState());
+
+  // Pause the render loop when the tab is hidden to save CPU/GPU/battery, resume
+  // when it becomes visible. `always` runs R3F's continuous loop; `never` stops
+  // it entirely (we drive nothing while hidden).
+  const [frameloop, setFrameloop] = useState<'always' | 'never'>('always');
+  useEffect(() => {
+    const sync = () => setFrameloop(document.hidden ? 'never' : 'always');
+    sync();
+    document.addEventListener('visibilitychange', sync);
+    return () => document.removeEventListener('visibilitychange', sync);
+  }, []);
 
   // Keyboard / pointer-drag / click-to-fly controls.
   const {boost, onSelect, onPointerDown} = useGalaxyControls({
@@ -39,10 +53,13 @@ export function Scene({
 
   return (
     <>
-      <div className="fixed inset-0 z-10">
+      {/* The canvas is purely decorative — all content lives in the HUD (DOM) and
+          the SSR résumé fallback. Hide it from assistive tech. */}
+      <div className="fixed inset-0 z-10" aria-hidden="true">
         <Canvas
           camera={{fov: 55, position: [0, 95, 210], near: 0.1, far: 4000}}
           dpr={[1, 2]}
+          frameloop={frameloop}
           gl={{antialias: true}}
           onPointerDown={(e) => onPointerDown(e)}
         >
@@ -50,9 +67,14 @@ export function Scene({
           <pointLight color={0xfff0d0} intensity={1.9} distance={0} decay={0.015} />
           <Starfield />
           <Sun />
-          <Planets current={nav.current} positionsRef={positionsRef} onSelect={onSelect} />
+          <Planets
+            current={nav.current}
+            positionsRef={positionsRef}
+            onSelect={onSelect}
+            reducedMotion={reducedMotion}
+          />
           <Galaxies />
-          <Comets />
+          <Comets reducedMotion={reducedMotion} />
           {/* ORDER MATTERS: CameraRig MUST render before Ship. R3F runs
               same-priority useFrame callbacks in mount (JSX) order, and CameraRig
               is the sole owner of trip-start — it must snapshot motion.shipFrom

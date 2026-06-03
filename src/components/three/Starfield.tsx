@@ -1,5 +1,5 @@
 'use client';
-import {useMemo} from 'react';
+import {useEffect, useMemo} from 'react';
 import * as THREE from 'three';
 
 /**
@@ -23,6 +23,9 @@ export function Starfield() {
     geo.setAttribute('position', new THREE.Float32BufferAttribute(positions, 3));
     return geo;
   }, []);
+
+  // Imperatively-created geometry — dispose on unmount (R3F won't).
+  useEffect(() => () => geometry.dispose(), [geometry]);
 
   return (
     <points geometry={geometry}>

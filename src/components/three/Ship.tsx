@@ -1,5 +1,5 @@
 'use client';
-import {useRef, useMemo} from 'react';
+import {useRef, useMemo, useEffect} from 'react';
 import {useFrame} from '@react-three/fiber';
 import * as THREE from 'three';
 import {PLANETS} from '@/data/planets';
@@ -76,6 +76,15 @@ export function Ship({
     }),
     [],
   );
+
+  // Halo texture + the ship's materials are created imperatively, so R3F won't
+  // auto-dispose them — release them on unmount.
+  useEffect(() => {
+    return () => {
+      haloTex.dispose();
+      Object.values(mats).forEach((m) => m.dispose());
+    };
+  }, [haloTex, mats]);
 
   const shipRef = useRef<THREE.Group>(null);
   const ring1Ref = useRef<THREE.Mesh>(null);

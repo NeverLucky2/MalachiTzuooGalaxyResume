@@ -1,5 +1,5 @@
 'use client';
-import {useMemo} from 'react';
+import {useEffect, useMemo} from 'react';
 import * as THREE from 'three';
 import {radialCanvas} from '@/lib/procedural';
 
@@ -16,6 +16,10 @@ export function Sun() {
     t.colorSpace = THREE.SRGBColorSpace;
     return t;
   }, []);
+
+  // The corona texture is created imperatively (not a JSX resource), so R3F won't
+  // auto-dispose it — release the GPU texture on unmount ourselves.
+  useEffect(() => () => coronaTex.dispose(), [coronaTex]);
 
   return (
     <group>

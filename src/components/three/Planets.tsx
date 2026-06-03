@@ -1,5 +1,5 @@
 'use client';
-import {useRef, useMemo} from 'react';
+import {useRef, useMemo, useEffect} from 'react';
 import {useFrame} from '@react-three/fiber';
 import * as THREE from 'three';
 import {PLANETS} from '@/data/planets';
@@ -7,15 +7,22 @@ import {Planet} from './Planet';
 
 type PositionsRef = {current: [number, number, number][]};
 
+// Ambient orbital drift is damped to this fraction of normal when the user
+// prefers reduced motion but has forced their way into the galaxy view.
+const REDUCED_MOTION_FACTOR = 0.15;
+
 export function Planets({
   current,
   positionsRef,
   onSelect,
+  reducedMotion = false,
 }: {
   current: number;
   positionsRef: PositionsRef;
   /** Click-to-fly handler invoked with the clicked planet's index. */
   onSelect?: (index: number) => void;
+  /** Damp idle orbital speed for prefers-reduced-motion users. */
+  reducedMotion?: boolean;
 }) {
   const groups = useRef<(THREE.Group | null)[]>([]);
   const ang = useRef<number[]>(PLANETS.map((_, i) => i * 1.1));
@@ -32,10 +39,14 @@ export function Planets({
     });
   }, []);
 
+  // Orbit geometries are created imperatively, so dispose them on unmount.
+  useEffect(() => () => orbitGeos.forEach((g) => g.dispose()), [orbitGeos]);
+
+  const motionScale = reducedMotion ? REDUCED_MOTION_FACTOR : 1;
   useFrame((_, dt) => {
     const d = Math.min(0.05, dt);
     PLANETS.forEach((p, i) => {
-      ang.current[i] += p.speed * d * (i === current ? 0.16 : 1);
+      ang.current[i] += p.speed * d * (i === current ? 0.16 : 1) * motionScale;
       const g = groups.current[i];
       if (!g) return;
       g.position.set(
