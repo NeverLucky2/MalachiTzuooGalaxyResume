@@ -5,12 +5,20 @@ import * as THREE from 'three';
 import {PLANETS} from '@/data/planets';
 import {PRESETS} from '@/lib/cameraPresets';
 import {radialCanvas} from '@/lib/procedural';
-import {bezierPoint, bowControl, smoothstep, type MotionState} from '@/lib/motion';
+import {
+  avoidanceControl,
+  bezierPoint,
+  smoothstep,
+  type MotionState,
+  type Obstacle,
+} from '@/lib/motion';
 import type {NavState} from '@/lib/navigation';
 
 const FWD = new THREE.Vector3(0, 0, 1);
-// Keep-out radius around the star the ship's travel arc bows past (matches CameraRig).
-const SAFE = 60;
+// Keep-out radius around the central star the ship's flight path must clear.
+const STAR_RADIUS = 26;
+// Extra margin added to each planet's size to form its keep-out radius.
+const PLANET_PAD = 4;
 
 type PositionsRef = {current: [number, number, number][]};
 
@@ -75,11 +83,18 @@ export function Ship({
   const shipScale = useRef(0.42);
   // Initialized-once guard for the ship's starting position.
   const inited = useRef(false);
+  // Previous nav snapshot, to detect a "startMove" trip start each frame.
+  const prevNav = useRef<NavState | null>(null);
   // Scratch objects reused each frame.
   const orbitPt = useRef(new THREE.Vector3());
-  const control = useRef(new THREE.Vector3());
   const vel = useRef(new THREE.Vector3());
   const tmpQ = useRef(new THREE.Quaternion());
+  // Reusable star obstacle + per-planet obstacle pool (rebuilt at each trip
+  // start, so no allocation in the per-frame path).
+  const star = useRef<Obstacle>({center: new THREE.Vector3(0, 0, 0), radius: STAR_RADIUS});
+  const planetObs = useRef<Obstacle[]>(
+    PLANETS.map(() => ({center: new THREE.Vector3(), radius: 0})),
+  );
 
   useFrame((_, delta) => {
     const dt = Math.min(0.05, delta);
@@ -97,6 +112,37 @@ export function Ship({
       inited.current = true;
     }
 
+    // --- detect nav change → trip start; compute the flight control ONCE. ---
+    const prev = prevNav.current;
+    if (
+      prev &&
+      (prev.current !== nav.current ||
+        prev.landed !== nav.landed ||
+        prev.preset !== nav.preset)
+    ) {
+      // Snapshot the launch point (idempotent with CameraRig's snapshot).
+      motion.shipFrom.copy(motion.shipPos);
+      // Orbit point around the destination at this instant (uses current orbAng).
+      const rrS = Math.max(size * 1.45, 1.3);
+      orbitPt.current.set(
+        P[0] + Math.cos(motion.orbAng) * rrS,
+        P[1] + Math.sin(motion.orbAng) * rrS * 0.32 + size * 0.45,
+        P[2] + Math.sin(motion.orbAng) * rrS,
+      );
+      // Obstacles: the star + every planet EXCEPT the destination.
+      const obs: Obstacle[] = [star.current];
+      for (let i = 0; i < PLANETS.length; i++) {
+        if (i === nav.current) continue;
+        const o = planetObs.current[i];
+        const Pi = positionsRef.current[i];
+        o.center.set(Pi[0], Pi[1], Pi[2]);
+        o.radius = PLANETS[i].size + PLANET_PAD;
+        obs.push(o);
+      }
+      avoidanceControl(motion.shipFrom, orbitPt.current, obs, 3, motion.shipControl);
+    }
+    prevNav.current = nav;
+
     // orbitPoint(P, n) from prototype.
     motion.orbAng += dt * 1.4;
     const rr = Math.max(size * 1.45, 1.3);
@@ -107,11 +153,12 @@ export function Ship({
     );
 
     // Merge into orbit via shared travelT (slightly faster than camera: *1.12),
-    // arcing around the star on long crossings via the same bow as the camera.
+    // along the flight path computed at trip start. With no obstacle on the way
+    // the control == midpoint (straight line); it swerves only to clear the star
+    // or a planet that lies on the path.
     prevShipPos.current.copy(motion.shipPos);
     const eR = smoothstep(Math.min(1, motion.travelT * 1.12));
-    bowControl(motion.shipFrom, orbitPt.current, SAFE, control.current);
-    bezierPoint(motion.shipFrom, control.current, orbitPt.current, eR, motion.shipPos);
+    bezierPoint(motion.shipFrom, motion.shipControl, orbitPt.current, eR, motion.shipPos);
     ship.position.copy(motion.shipPos);
 
     // Scale lerp toward landed / preset target.

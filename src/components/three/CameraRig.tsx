@@ -4,13 +4,20 @@ import {useFrame, useThree} from '@react-three/fiber';
 import * as THREE from 'three';
 import {PLANETS} from '@/data/planets';
 import {framing} from '@/lib/cameraPresets';
-import {bezierPoint, bowControl, smoothstep, type MotionState} from '@/lib/motion';
+import {
+  avoidanceControl,
+  bezierPoint,
+  smoothstep,
+  type MotionState,
+  type Obstacle,
+} from '@/lib/motion';
 import type {NavState} from '@/lib/navigation';
 
 const BOOST = 1.3;
-// Keep-out radius around the star (radius 9 + glow ~21 + margin) the travel arc
-// bows past, so crossings between opposite-side planets curve around it.
-const SAFE = 60;
+// Keep-out radius around the central star the flight path must clear.
+const STAR_RADIUS = 26;
+// Extra margin added to each planet's size to form its keep-out radius.
+const PLANET_PAD = 6;
 
 type PositionsRef = {current: [number, number, number][]};
 
@@ -39,7 +46,13 @@ export function CameraRig({
   const targetLook = useRef(new THREE.Vector3());
   const radv = useRef(new THREE.Vector3());
   const tang = useRef(new THREE.Vector3());
-  const control = useRef(new THREE.Vector3());
+  // Reusable star obstacle + per-planet obstacle pool (rebuilt at each trip
+  // start, so no allocation in the per-frame path).
+  const star = useRef<Obstacle>({center: new THREE.Vector3(0, 0, 0), radius: STAR_RADIUS});
+  const planetObs = useRef<Obstacle[]>(
+    PLANETS.map(() => ({center: new THREE.Vector3(), radius: 0})),
+  );
+  const liftOff = useRef(new THREE.Vector3());
 
   useFrame((_, delta) => {
     const dt = Math.min(0.05, delta);
@@ -60,6 +73,24 @@ export function CameraRig({
       if (!prev.landed && nav.landed) motion.moveBase = 0.85;
       else if (prev.landed && !nav.landed) motion.moveBase = 0.75;
       else motion.moveBase = 0.4;
+
+      // Compute the flight control point ONCE per trip (snapshot of the target
+      // + obstacles at this instant), so moving planets don't cause wobble.
+      const Ps = positionsRef.current[nav.current];
+      const sizeS = PLANETS[nav.current].size;
+      const tgt = framing(Ps, sizeS, nav.preset, nav.landed);
+      liftOff.current.set(tgt.pos[0], tgt.pos[1], tgt.pos[2]);
+      // Obstacles: the star + every planet EXCEPT the destination.
+      const obs: Obstacle[] = [star.current];
+      for (let i = 0; i < PLANETS.length; i++) {
+        if (i === nav.current) continue;
+        const o = planetObs.current[i];
+        const Pi = positionsRef.current[i];
+        o.center.set(Pi[0], Pi[1], Pi[2]);
+        o.radius = PLANETS[i].size + PLANET_PAD;
+        obs.push(o);
+      }
+      avoidanceControl(motion.fromCam, liftOff.current, obs, 3, motion.camControl);
     }
     prevNav.current = nav;
 
@@ -79,12 +110,12 @@ export function CameraRig({
     targetPos.current.set(target.pos[0], target.pos[1], target.pos[2]);
     targetLook.current.set(target.look[0], target.look[1], target.look[2]);
 
-    // --- camera position along an arc that bows around the star + free-look ---
-    // Quadratic Bézier from `fromCam` → framing target, control point pushed away
-    // from the origin so long opposite-side crossings curve around the star.
-    // Short hops (midpoint already ≥ SAFE) reduce to the straight lerp.
-    bowControl(motion.fromCam, targetPos.current, SAFE, control.current);
-    bezierPoint(motion.fromCam, control.current, targetPos.current, e, camera.position);
+    // --- camera position along the flight path + free-look ---
+    // Quadratic Bézier from `fromCam` → the LIVE framing target, using the
+    // control point computed once at trip start. With no obstacle on the path
+    // the control == midpoint, so this is a straight line; it swerves sideways
+    // only enough to clear the star or a planet that lies on the way.
+    bezierPoint(motion.fromCam, motion.camControl, targetPos.current, e, camera.position);
     // radial / tangent at the planet for the free-look pan
     radv.current.set(P[0], 0, P[2]);
     if (radv.current.lengthSq() < 1e-4) radv.current.set(1, 0, 0);
