@@ -36,7 +36,7 @@ export function Hud({
         }`}
       >
         <div className="pointer-events-auto flex items-center gap-3 rounded-[14px] border border-[#21e6ff]/50 bg-[#0a0a1f]/60 px-4 py-[10px] shadow-[0_0_18px_rgba(33,230,255,.35)] backdrop-blur-md">
-          <span className="bg-gradient-to-r from-[#21e6ff] to-[#ff3df0] bg-clip-text font-[Orbitron] text-base font-black tracking-wide text-transparent">
+          <span className="bg-gradient-to-r from-[#21e6ff] to-[#ff3df0] bg-clip-text font-display text-base font-black tracking-wide text-transparent">
             MALACHI TZUOO
           </span>
           <Chip>LV.25</Chip>
@@ -50,7 +50,7 @@ export function Hud({
 
       {/* Boost hint. Hidden while landed. */}
       <div
-        className={`absolute bottom-[66px] left-[22px] font-[Orbitron] text-[10px] tracking-wide transition-opacity duration-300 ${
+        className={`absolute bottom-[66px] left-[22px] font-display text-[10px] tracking-wide transition-opacity duration-300 ${
           nav.landed ? 'opacity-0' : ''
         } ${
           boost
@@ -79,7 +79,7 @@ export function Hud({
 
         {/* Camera angle caption above the view button */}
         <span className="inline-flex flex-col items-center gap-[3px]">
-          <span className="whitespace-nowrap font-[Orbitron] text-[9px] tracking-wide text-[#21e6ff] opacity-65 [text-shadow:0_0_6px_rgba(33,230,255,.5)]">
+          <span className="whitespace-nowrap font-display text-[9px] tracking-wide text-[#21e6ff] opacity-65 [text-shadow:0_0_6px_rgba(33,230,255,.5)]">
             CAMERA ANGLE · V
           </span>
           <CtrlButton onClick={() => dispatch({type: 'cyclePreset'})}>
@@ -129,7 +129,7 @@ function CtrlButton({
       type="button"
       onClick={onClick}
       disabled={disabled}
-      className={`pointer-events-auto rounded-xl border px-4 py-3 font-[Orbitron] text-[13px] font-bold text-[#e7f6ff] disabled:cursor-default disabled:opacity-35 disabled:shadow-none ${
+      className={`pointer-events-auto rounded-xl border px-4 py-3 font-display text-[13px] font-bold text-[#e7f6ff] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-cyan-300 disabled:cursor-default disabled:opacity-35 disabled:shadow-none ${
         land
           ? 'border-[#ff3df0] bg-gradient-to-r from-[#ff3df0]/30 to-[#21e6ff]/30 text-white shadow-[0_0_16px_#ff3df0]'
           : 'border-[#21e6ff]/50 bg-[#0a0a1f]/60 shadow-[0_0_14px_rgba(33,230,255,.3)]'

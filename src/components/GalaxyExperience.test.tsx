@@ -10,9 +10,20 @@ vi.mock('@/lib/capabilities', () => ({
   detectCaps: () => caps.value,
   shouldUse3D: () => caps.use3D,
 }));
-vi.mock('@/components/three/Scene', () => ({Scene: () => <div data-testid="scene" />}));
+// Stub Scene with a working "skip to résumé" button so we can exercise the skip
+// flow + focus management without mounting the real 3D canvas.
+vi.mock('@/components/three/Scene', () => ({
+  Scene: ({onSkip}: {onSkip: () => void}) => (
+    <div data-testid="scene">
+      <button type="button" onClick={onSkip}>
+        📄 RÉSUMÉ VIEW
+      </button>
+    </div>
+  ),
+}));
 
 import {GalaxyExperience} from './GalaxyExperience';
+import {FallbackResume} from './fallback/FallbackResume';
 
 describe('GalaxyExperience', () => {
   beforeEach(() => {
@@ -45,5 +56,28 @@ describe('GalaxyExperience', () => {
     render(<GalaxyExperience />);
     // Scene is a dynamic(ssr:false) import, so it resolves on a microtask.
     await waitFor(() => expect(screen.getByTestId('scene')).toBeInTheDocument());
+  });
+
+  it('skip-to-résumé switches to the 2D view and focuses its heading', async () => {
+    caps.value = {hasWebGL: true, reducedMotion: false, coarsePointer: false, width: 1280};
+    caps.use3D = true;
+    // rAF runs the focus callback; drive it deterministically.
+    vi.spyOn(window, 'requestAnimationFrame').mockImplementation((cb) => {
+      cb(0);
+      return 0;
+    });
+    // The page renders the SSR résumé (with the focus target heading) alongside.
+    render(
+      <>
+        <FallbackResume />
+        <GalaxyExperience />
+      </>,
+    );
+    const skip = await screen.findByRole('button', {name: /résumé view/i});
+    skip.click();
+    await waitFor(() => expect(screen.queryByTestId('scene')).toBeNull());
+    const heading = screen.getByRole('heading', {name: /malachi tzuoo/i});
+    expect(heading).toHaveFocus();
+    vi.restoreAllMocks();
   });
 });

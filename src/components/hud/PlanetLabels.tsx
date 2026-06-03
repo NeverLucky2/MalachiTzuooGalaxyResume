@@ -51,7 +51,7 @@ export function PlanetLabels({
             zIndexRange={[15, 0]}
           >
             <div
-              className="whitespace-nowrap font-[Orbitron] font-bold tracking-wide text-white"
+              className="whitespace-nowrap font-display font-bold tracking-wide text-white"
               style={{
                 fontSize: i === current ? 15 : 12,
                 opacity: i === current ? 1 : 0.82,

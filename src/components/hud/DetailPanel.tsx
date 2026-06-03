@@ -29,7 +29,7 @@ export function DetailPanel({
       <button
         type="button"
         onClick={onTakeOff}
-        className="pointer-events-auto absolute bottom-5 left-6 rounded-xl border border-[#ff3df0] bg-gradient-to-r from-[#ff3df0]/30 to-[#21e6ff]/30 px-[18px] py-3 font-[Orbitron] text-[13px] font-bold tracking-wide text-white shadow-[0_0_16px_#ff3df0]"
+        className="pointer-events-auto absolute bottom-5 left-6 rounded-xl border border-[#ff3df0] bg-gradient-to-r from-[#ff3df0]/30 to-[#21e6ff]/30 px-[18px] py-3 font-display text-[13px] font-bold tracking-wide text-white shadow-[0_0_16px_#ff3df0] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-cyan-300"
       >
         🚀 TAKE OFF
       </button>
@@ -40,7 +40,7 @@ export function DetailPanel({
         style={{borderColor: glow, boxShadow: `0 0 50px ${glow}`}}
       >
         <div className="border-b border-white/10 px-[26px] pb-4 pt-[22px]">
-          <h2 className="m-0 font-[Orbitron] text-[22px]">{planet.label}</h2>
+          <h2 className="m-0 font-display text-[22px]">{planet.label}</h2>
           <div className="mt-1 text-[13px] opacity-65">{planet.subtitle}</div>
         </div>
         <div className="space-y-3 px-[26px] pt-[18px]">

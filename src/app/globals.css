@@ -1,8 +1,12 @@
 @import "tailwindcss";
 
+/* Map the next/font CSS variables (declared on <html> by layout.tsx) to Tailwind
+   font-family utilities. `font-display` → Orbitron, `font-sans` → Inter. The
+   next/font variables hold the real (hashed) family names, so referencing them
+   here is what actually applies the loaded fonts. */
 @theme inline {
-  --font-orbitron: var(--font-orbitron);
-  --font-inter: var(--font-inter);
+  --font-display: var(--font-orbitron), Orbitron, system-ui, sans-serif;
+  --font-sans: var(--font-inter), Inter, system-ui, sans-serif;
 }
 
 body {
