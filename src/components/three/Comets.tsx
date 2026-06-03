@@ -72,13 +72,29 @@ export function Comets({reducedMotion = false}: {reducedMotion?: boolean} = {}) 
     });
   }, []);
 
-  // Imperatively-created glow texture + trail geometries — dispose on unmount.
+  // Build trail Line objects + materials once (hoisted so they aren't
+  // re-created on every render and so they can be disposed on unmount).
+  const trailLines = useMemo(() => {
+    return trailGeos.map((geo) => {
+      const mat = new THREE.LineBasicMaterial({
+        color: 0x9fd0ff,
+        transparent: true,
+        opacity: 0.45,
+        blending: THREE.AdditiveBlending,
+        depthWrite: false,
+      });
+      return new THREE.Line(geo, mat);
+    });
+  }, [trailGeos]);
+
+  // Imperatively-created glow texture + trail geometries + line materials — dispose on unmount.
   useEffect(() => {
     return () => {
       glowTex.dispose();
       trailGeos.forEach((g) => g.dispose());
+      trailLines.forEach((l) => l.material.dispose());
     };
-  }, [glowTex, trailGeos]);
+  }, [glowTex, trailGeos, trailLines]);
 
   const motionScale = reducedMotion ? REDUCED_MOTION_FACTOR : 1;
   useFrame((_, dt) => {
@@ -134,22 +150,10 @@ export function Comets({reducedMotion = false}: {reducedMotion?: boolean} = {}) 
         <group key={i}>
           {/* Trail line */}
           <primitive
-            object={
-              (() => {
-                const line = new THREE.Line(
-                  trailGeos[i],
-                  new THREE.LineBasicMaterial({
-                    color: 0x9fd0ff,
-                    transparent: true,
-                    opacity: 0.45,
-                    blending: THREE.AdditiveBlending,
-                    depthWrite: false,
-                  }),
-                );
-                trailGeoRefs.current[i] = trailGeos[i];
-                return line;
-              })()
-            }
+            object={(() => {
+              trailGeoRefs.current[i] = trailGeos[i];
+              return trailLines[i];
+            })()}
           />
           {/* Glow sprite head */}
           <sprite

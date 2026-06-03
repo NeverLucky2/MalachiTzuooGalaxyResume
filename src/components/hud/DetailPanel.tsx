@@ -19,12 +19,10 @@ export function DetailPanel({
   const planet = PLANETS[nav.current];
   const glow = planet.glow;
 
+  if (!nav.landed) return null;
+
   return (
-    <div
-      className={`pointer-events-none fixed inset-0 z-20 transition-opacity duration-500 ${
-        nav.landed ? 'opacity-100' : 'opacity-0'
-      }`}
-    >
+    <div className="pointer-events-none fixed inset-0 z-20">
       {/* TAKE OFF button (bottom-left) */}
       <button
         type="button"

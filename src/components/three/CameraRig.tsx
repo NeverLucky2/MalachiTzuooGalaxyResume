@@ -165,8 +165,8 @@ export function CameraRig({
     tang.current.set(-radv.current.z, 0, radv.current.x);
     const drag = nav.landed ? 0.35 : 1;
     camera.position
-      .addScaledVector(tang.current, motion.yaw * 8 * drag)
-      .add(new THREE.Vector3(0, motion.pitch * 10 * drag, 0));
+      .addScaledVector(tang.current, motion.yaw * 8 * drag);
+    camera.position.y += motion.pitch * 10 * drag;
 
     // --- look target lerp ---
     motion.lastLook.copy(motion.fromLook).lerp(targetLook.current, e);

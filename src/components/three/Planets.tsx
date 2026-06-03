@@ -81,7 +81,6 @@ export function Planets({
         >
           <Planet
             planet={p}
-            selected={i === current}
             onSelect={onSelect ? () => onSelect(i) : undefined}
           />
         </group>

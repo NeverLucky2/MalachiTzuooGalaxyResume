@@ -7,7 +7,6 @@ import {planetCanvas, cloudCanvas} from '@/lib/procedural';
 
 interface PlanetProps {
   planet: PlanetType;
-  selected: boolean;
   /** Click-to-fly handler (fired on the main planet mesh). */
   onSelect?: () => void;
 }
@@ -49,6 +48,9 @@ export function Planet({planet, onSelect}: PlanetProps) {
   useEffect(() => () => planetTex.dispose(), [planetTex]);
   useEffect(() => () => cloudTex?.dispose(), [cloudTex]);
   useEffect(() => () => moonTex?.dispose(), [moonTex]);
+
+  // Reset cursor on unmount in case the component is removed while hovering.
+  useEffect(() => () => { document.body.style.cursor = 'auto'; }, []);
 
   // Per-frame animation: spin planet, clouds, moon orbit
   useFrame((_, dt) => {

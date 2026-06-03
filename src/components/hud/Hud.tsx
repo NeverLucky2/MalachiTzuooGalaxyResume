@@ -63,6 +63,8 @@ export function Hud({
 
       {/* Bottom control bar. Hidden while landed. */}
       <div
+        inert={nav.landed || undefined}
+        aria-hidden={nav.landed}
         className={`absolute inset-x-0 bottom-0 flex flex-wrap items-end gap-[10px] px-[22px] pb-[18px] pt-3 transition-opacity duration-300 ${
           nav.landed ? 'pointer-events-none opacity-0' : 'pointer-events-auto opacity-100'
         }`}

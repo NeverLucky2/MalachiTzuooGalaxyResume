@@ -74,7 +74,7 @@ const personJsonLd = {
   name: 'Malachi Tzuoo',
   jobTitle: 'Software Engineer',
   url: SITE_URL,
-  email: 'mailto:mtzuoo@gmail.com',
+  email: 'mtzuoo@gmail.com',
   address: {
     '@type': 'PostalAddress',
     addressLocality: 'Chicago',
