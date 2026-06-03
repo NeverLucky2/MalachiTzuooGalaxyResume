@@ -28,6 +28,7 @@
     "@types/react-dom": "^19",
     "@types/three": "^0.184.1",
     "@vitejs/plugin-react": "^6.0.2",
+    "canvas": "^3.2.3",
     "eslint": "^9",
     "eslint-config-next": "16.2.7",
     "jsdom": "^29.1.1",
