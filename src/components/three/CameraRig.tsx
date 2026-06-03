@@ -4,10 +4,13 @@ import {useFrame, useThree} from '@react-three/fiber';
 import * as THREE from 'three';
 import {PLANETS} from '@/data/planets';
 import {framing} from '@/lib/cameraPresets';
-import {smoothstep, type MotionState} from '@/lib/motion';
+import {bezierPoint, bowControl, smoothstep, type MotionState} from '@/lib/motion';
 import type {NavState} from '@/lib/navigation';
 
 const BOOST = 1.3;
+// Keep-out radius around the star (radius 9 + glow ~21 + margin) the travel arc
+// bows past, so crossings between opposite-side planets curve around it.
+const SAFE = 60;
 
 type PositionsRef = {current: [number, number, number][]};
 
@@ -36,6 +39,7 @@ export function CameraRig({
   const targetLook = useRef(new THREE.Vector3());
   const radv = useRef(new THREE.Vector3());
   const tang = useRef(new THREE.Vector3());
+  const control = useRef(new THREE.Vector3());
 
   useFrame((_, delta) => {
     const dt = Math.min(0.05, delta);
@@ -75,8 +79,12 @@ export function CameraRig({
     targetPos.current.set(target.pos[0], target.pos[1], target.pos[2]);
     targetLook.current.set(target.look[0], target.look[1], target.look[2]);
 
-    // --- camera position lerp + free-look offset (port from prototype) ---
-    camera.position.copy(motion.fromCam).lerp(targetPos.current, e);
+    // --- camera position along an arc that bows around the star + free-look ---
+    // Quadratic Bézier from `fromCam` → framing target, control point pushed away
+    // from the origin so long opposite-side crossings curve around the star.
+    // Short hops (midpoint already ≥ SAFE) reduce to the straight lerp.
+    bowControl(motion.fromCam, targetPos.current, SAFE, control.current);
+    bezierPoint(motion.fromCam, control.current, targetPos.current, e, camera.position);
     // radial / tangent at the planet for the free-look pan
     radv.current.set(P[0], 0, P[2]);
     if (radv.current.lengthSq() < 1e-4) radv.current.set(1, 0, 0);

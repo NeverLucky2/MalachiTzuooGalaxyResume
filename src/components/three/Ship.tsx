@@ -5,10 +5,12 @@ import * as THREE from 'three';
 import {PLANETS} from '@/data/planets';
 import {PRESETS} from '@/lib/cameraPresets';
 import {radialCanvas} from '@/lib/procedural';
-import {smoothstep, type MotionState} from '@/lib/motion';
+import {bezierPoint, bowControl, smoothstep, type MotionState} from '@/lib/motion';
 import type {NavState} from '@/lib/navigation';
 
 const FWD = new THREE.Vector3(0, 0, 1);
+// Keep-out radius around the star the ship's travel arc bows past (matches CameraRig).
+const SAFE = 60;
 
 type PositionsRef = {current: [number, number, number][]};
 
@@ -75,6 +77,7 @@ export function Ship({
   const inited = useRef(false);
   // Scratch objects reused each frame.
   const orbitPt = useRef(new THREE.Vector3());
+  const control = useRef(new THREE.Vector3());
   const vel = useRef(new THREE.Vector3());
   const tmpQ = useRef(new THREE.Quaternion());
 
@@ -103,10 +106,12 @@ export function Ship({
       P[2] + Math.sin(motion.orbAng) * rr,
     );
 
-    // Merge into orbit via shared travelT (slightly faster than camera: *1.12).
+    // Merge into orbit via shared travelT (slightly faster than camera: *1.12),
+    // arcing around the star on long crossings via the same bow as the camera.
     prevShipPos.current.copy(motion.shipPos);
     const eR = smoothstep(Math.min(1, motion.travelT * 1.12));
-    motion.shipPos.copy(motion.shipFrom).lerp(orbitPt.current, eR);
+    bowControl(motion.shipFrom, orbitPt.current, SAFE, control.current);
+    bezierPoint(motion.shipFrom, control.current, orbitPt.current, eR, motion.shipPos);
     ship.position.copy(motion.shipPos);
 
     // Scale lerp toward landed / preset target.
