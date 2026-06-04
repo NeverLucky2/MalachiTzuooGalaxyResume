@@ -5,6 +5,9 @@ import type {NavState, NavAction} from '@/lib/navigation';
 import {PLANETS} from '@/data/planets';
 import {createMotionState} from '@/lib/motion';
 import {useGalaxyControls} from '@/hooks/useGalaxyControls';
+import {useIsCompact} from '@/hooks/useIsCompact';
+import {useTouchGestures} from '@/hooks/useTouchGestures';
+import {MobileHud} from '@/components/hud/MobileHud';
 import {Starfield} from './Starfield';
 import {Sun} from './Sun';
 import {Planets} from './Planets';
@@ -45,11 +48,14 @@ export function Scene({
   }, []);
 
   // Keyboard / pointer-drag / click-to-fly controls.
+  const isCompact = useIsCompact();
   const {boost, onSelect, onPointerDown} = useGalaxyControls({
     nav,
     dispatch,
     motion: motion.current,
+    compact: isCompact,
   });
+  const gestures = useTouchGestures({nav, dispatch, enabled: isCompact});
 
   return (
     <>
@@ -61,7 +67,10 @@ export function Scene({
           dpr={[1, 2]}
           frameloop={frameloop}
           gl={{antialias: true}}
-          onPointerDown={(e) => onPointerDown(e)}
+          onPointerDown={(e) => {
+            onPointerDown(e);
+            gestures.onPointerDown(e);
+          }}
         >
           <ambientLight color={0x6a7fb0} intensity={1.45} />
           <pointLight color={0xfff0d0} intensity={1.9} distance={0} decay={0.015} />
@@ -88,8 +97,13 @@ export function Scene({
           />
         </Canvas>
       </div>
-      {/* DOM overlay HUD — sibling of the Canvas, NOT inside it. */}
-      <Hud nav={nav} dispatch={dispatch} onSkip={onSkip} boost={boost} />
+      {/* DOM overlay HUD — sibling of the Canvas, NOT inside it. Compact (touch)
+          devices and narrow windows get the MobileHud; desktop keeps the full Hud. */}
+      {isCompact ? (
+        <MobileHud nav={nav} dispatch={dispatch} onSkip={onSkip} />
+      ) : (
+        <Hud nav={nav} dispatch={dispatch} onSkip={onSkip} boost={boost} />
+      )}
     </>
   );
 }
