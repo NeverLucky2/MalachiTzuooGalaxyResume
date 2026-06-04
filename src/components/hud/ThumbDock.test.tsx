@@ -25,4 +25,13 @@ describe('ThumbDock', () => {
     rerender(<ThumbDock nav={{...initialNav(), current: PLANETS.length - 1}} dispatch={dispatch} />);
     expect(screen.getByRole('button', {name: /outward/i})).toBeDisabled();
   });
+
+  it('camera-angle button shows the current preset and dispatches cyclePreset', () => {
+    const dispatch = vi.fn();
+    render(<ThumbDock nav={initialNav()} dispatch={dispatch} />);
+    const cam = screen.getByRole('button', {name: /camera angle/i});
+    expect(cam).toHaveTextContent(/SUN LEFT/i); // initialNav preset
+    cam.click();
+    expect(dispatch).toHaveBeenCalledWith({type: 'cyclePreset'});
+  });
 });

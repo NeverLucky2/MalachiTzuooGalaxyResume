@@ -2,7 +2,8 @@
 import {PLANETS} from '@/data/planets';
 import type {NavState, NavAction} from '@/lib/navigation';
 
-/** Bottom thumb dock for the compact HUD: ◀ inward · LAND · outward ▶. */
+/** Bottom thumb dock for the compact HUD: a camera-angle toggle stacked above
+ *  ◀ inward, then LAND, then outward ▶. */
 export function ThumbDock({
   nav,
   dispatch,
@@ -13,9 +14,21 @@ export function ThumbDock({
   const n = PLANETS.length;
   return (
     <div className="pointer-events-none fixed inset-x-0 bottom-0 z-20 grid grid-cols-[1fr_1.3fr_1fr] items-end gap-2 px-4 pb-[calc(14px+env(safe-area-inset-bottom))] pt-3">
-      <DockButton aria-label="Inward" onClick={() => dispatch({type: 'prev', n})} disabled={nav.current === 0}>
-        ◀
-      </DockButton>
+      {/* Left column: camera-angle toggle above the inward button. */}
+      <div className="flex flex-col gap-2">
+        <button
+          type="button"
+          aria-label="Camera angle"
+          onClick={() => dispatch({type: 'cyclePreset'})}
+          className="pointer-events-auto flex items-center justify-center gap-1 truncate whitespace-nowrap rounded-xl border border-[#21e6ff]/50 bg-[#0a0a1f]/70 px-1 py-2 font-display text-[10px] text-[#9fe9ff] shadow-[0_0_10px_rgba(33,230,255,.25)] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-cyan-300"
+        >
+          <span aria-hidden="true">📷</span>
+          {nav.preset}
+        </button>
+        <DockButton aria-label="Inward" onClick={() => dispatch({type: 'prev', n})} disabled={nav.current === 0}>
+          ◀
+        </DockButton>
+      </div>
       <DockButton aria-label="Land" land onClick={() => dispatch({type: 'land'})}>
         LAND
       </DockButton>
