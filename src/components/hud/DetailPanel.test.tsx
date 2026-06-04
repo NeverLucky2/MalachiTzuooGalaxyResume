@@ -4,12 +4,13 @@ import {DetailPanel} from './DetailPanel';
 import {initialNav} from '@/lib/navigation';
 
 describe('DetailPanel', () => {
-  it('shows content + header after the reveal delay; TAKE OFF is immediate', () => {
+  it('reveals content + header after the delay; TAKE OFF is immediate', () => {
     vi.useFakeTimers();
     try {
       // current 0 = ABOUT; its content includes the Chicago location card.
       render(<DetailPanel nav={{...initialNav(), landed: true}} onTakeOff={() => {}} />);
-      // TAKE OFF appears right away; the text panel is delayed so the zoom shows.
+      // TAKE OFF appears right away; the text panel is hidden (aria-hidden) until
+      // the reveal delay, so getByRole excludes its heading.
       expect(screen.getByRole('button', {name: /take off/i})).toBeInTheDocument();
       expect(screen.queryByRole('heading', {name: /about/i})).toBeNull();
       act(() => {
@@ -43,25 +44,19 @@ describe('DetailPanel', () => {
     }
   });
 
-  it('fades out on take-off, then unmounts after the fade', () => {
+  it('hides the panel again on take-off', () => {
     vi.useFakeTimers();
     try {
       const {rerender} = render(
         <DetailPanel nav={{...initialNav(), landed: true}} onTakeOff={() => {}} />,
       );
       act(() => {
-        vi.advanceTimersByTime(1000); // reveal
+        vi.advanceTimersByTime(1000);
       });
       expect(screen.getByRole('heading', {name: /about/i})).toBeInTheDocument();
 
-      // Take off: the panel lingers during the fade-out...
+      // Take off → the panel is hidden again (aria-hidden), so getByRole excludes it.
       rerender(<DetailPanel nav={{...initialNav(), landed: false}} onTakeOff={() => {}} />);
-      expect(screen.getByRole('heading', {name: /about/i})).toBeInTheDocument();
-
-      // ...then unmounts once the fade completes.
-      act(() => {
-        vi.advanceTimersByTime(400); // > TAKE_OFF_FADE_MS (300)
-      });
       expect(screen.queryByRole('heading', {name: /about/i})).toBeNull();
     } finally {
       vi.useRealTimers();

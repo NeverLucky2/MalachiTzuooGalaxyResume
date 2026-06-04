@@ -1,21 +1,20 @@
 'use client';
-import {useEffect, useRef, useState} from 'react';
+import {useEffect, useState} from 'react';
 import {PLANETS} from '@/data/planets';
 import {CONTENT} from '@/data/content';
 import {ContentRenderer} from '@/components/fallback/ContentRenderer';
 import type {NavState} from '@/lib/navigation';
 
-/** Delay (ms) before the text panel appears after landing, so the zoom plays first. */
+/** Delay (ms) before the text panel fades in after landing, so the zoom plays first. */
 export const LAND_REVEAL_MS = 1000;
-/** Quick fade-out (ms) on take-off; the panel lingers this long, then unmounts. */
-export const TAKE_OFF_FADE_MS = 300;
 
 /**
- * Landed-section detail panel. Shown when `nav.landed`. Header = planet label +
- * subtitle; body reuses the shared <ContentRenderer>. A TAKE OFF button calls
- * `onTakeOff`. The text panel is held back ~1s after landing (so the zoom plays),
- * fades in, and fades out on take-off — on both desktop and mobile. `compact`
- * only makes the panel slightly more transparent so the planet glows behind.
+ * Landed-section detail panel. The text panel is ALWAYS mounted but hidden
+ * (opacity 0, aria-hidden, no pointer events) until ~1s after landing, then it
+ * fades in; on take-off it fades out. Keeping it mounted — rather than mounting/
+ * unmounting — lets the CSS opacity transition play cleanly in both directions
+ * with no flash. `compact` only makes the panel slightly more transparent so the
+ * planet glows behind it. The TAKE OFF button appears immediately on landing.
  */
 export function DetailPanel({
   nav,
@@ -30,37 +29,18 @@ export function DetailPanel({
   const planet = PLANETS[nav.current];
   const glow = planet.glow;
 
-  // `revealed`: content shown after the landing delay. `exiting`: kept mounted to
-  // play the take-off fade-out, then unmounted. `shownRef` tracks whether it was
-  // actually revealed, so a land→quick-takeoff doesn't flash an unrevealed panel.
+  // Reveal the panel a beat after landing (lets the zoom play); reset on take-off.
   const [revealed, setRevealed] = useState(false);
-  const [exiting, setExiting] = useState(false);
-  const shownRef = useRef(false);
-
-  // Enter: reveal after the delay while landed. Take-off (cleanup): cancel a
-  // pending reveal, hide, and — only if it had been shown — start the exit fade.
   useEffect(() => {
     if (!nav.landed) return;
-    const id = setTimeout(() => {
-      setRevealed(true);
-      shownRef.current = true;
-    }, LAND_REVEAL_MS);
+    const id = setTimeout(() => setRevealed(true), LAND_REVEAL_MS);
     return () => {
       clearTimeout(id);
       setRevealed(false);
-      if (shownRef.current) setExiting(true);
-      shownRef.current = false;
     };
   }, [nav.landed]);
 
-  // Drop the exit fade after its duration, unmounting the panel.
-  useEffect(() => {
-    if (!exiting) return;
-    const id = setTimeout(() => setExiting(false), TAKE_OFF_FADE_MS);
-    return () => clearTimeout(id);
-  }, [exiting]);
-
-  if (!nav.landed && !exiting) return null;
+  const show = nav.landed && revealed;
 
   return (
     <div className="pointer-events-none fixed inset-0 z-20">
@@ -75,32 +55,28 @@ export function DetailPanel({
         </button>
       )}
 
-      {/* Text panel — appears after LAND_REVEAL_MS (lets the zoom show), fades in,
-          and fades out on take-off. More transparent on compact. */}
-      {(revealed || exiting) && (
-        <div
-          className={`pointer-events-auto absolute left-1/2 right-auto top-1/2 max-h-[72vh] w-[min(440px,92vw)] -translate-x-1/2 -translate-y-1/2 overflow-auto rounded-[18px] border pb-6 backdrop-blur-md sm:left-auto sm:right-[4%] sm:max-h-[84vh] sm:translate-x-0 ${
-            compact ? 'bg-[#080818]/70' : 'bg-[#080818]/85'
-          }`}
-          style={{
-            borderColor: glow,
-            boxShadow: `0 0 50px ${glow}`,
-            // Fade in on reveal; quick fade out on take-off (forwards holds it at 0
-            // until the unmount). Opacity-only so it never fights the translate.
-            animation: exiting
-              ? `detailFadeOut ${TAKE_OFF_FADE_MS}ms ease-in forwards`
-              : 'detailFadeIn 0.45s ease-out',
-          }}
-        >
-          <div className="border-b border-white/10 px-[26px] pb-4 pt-[22px]">
-            <h2 className="m-0 font-display text-[22px]">{planet.label}</h2>
-            <div className="mt-1 text-[13px] opacity-65">{planet.subtitle}</div>
-          </div>
-          <div className="space-y-3 px-[26px] pt-[18px]">
-            <ContentRenderer blocks={CONTENT[planet.id]} />
-          </div>
+      {/* Text panel — always mounted; fades in after the delay, out on take-off. */}
+      <div
+        aria-hidden={!show}
+        className={`absolute left-1/2 right-auto top-1/2 max-h-[72vh] w-[min(440px,92vw)] -translate-x-1/2 -translate-y-1/2 overflow-auto rounded-[18px] border pb-6 backdrop-blur-md sm:left-auto sm:right-[4%] sm:max-h-[84vh] sm:translate-x-0 ${
+          compact ? 'bg-[#080818]/70' : 'bg-[#080818]/85'
+        } ${show ? 'pointer-events-auto' : 'pointer-events-none'}`}
+        style={{
+          borderColor: glow,
+          boxShadow: `0 0 50px ${glow}`,
+          opacity: show ? 1 : 0,
+          // Fade in (slower) after the reveal delay; quick fade out on take-off.
+          transition: show ? 'opacity 0.45s ease-out' : 'opacity 0.3s ease-in',
+        }}
+      >
+        <div className="border-b border-white/10 px-[26px] pb-4 pt-[22px]">
+          <h2 className="m-0 font-display text-[22px]">{planet.label}</h2>
+          <div className="mt-1 text-[13px] opacity-65">{planet.subtitle}</div>
         </div>
-      )}
+        <div className="space-y-3 px-[26px] pt-[18px]">
+          <ContentRenderer blocks={CONTENT[planet.id]} />
+        </div>
+      </div>
     </div>
   );
 }
