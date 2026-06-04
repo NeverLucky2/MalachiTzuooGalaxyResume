@@ -30,20 +30,6 @@ describe('DetailPanel', () => {
     expect(onTakeOff).toHaveBeenCalledTimes(1);
   });
 
-  it('compact also delays the panel until after the reveal delay', () => {
-    vi.useFakeTimers();
-    try {
-      render(<DetailPanel nav={{...initialNav(), landed: true}} onTakeOff={() => {}} compact />);
-      expect(screen.queryByRole('heading', {name: /about/i})).toBeNull();
-      act(() => {
-        vi.advanceTimersByTime(1000);
-      });
-      expect(screen.getByRole('heading', {name: /about/i})).toBeInTheDocument();
-    } finally {
-      vi.useRealTimers();
-    }
-  });
-
   it('hides the panel again on take-off', () => {
     vi.useFakeTimers();
     try {

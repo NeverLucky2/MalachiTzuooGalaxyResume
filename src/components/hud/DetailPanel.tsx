@@ -13,18 +13,16 @@ export const LAND_REVEAL_MS = 1000;
  * (opacity 0, aria-hidden, no pointer events) until ~1s after landing, then it
  * fades in; on take-off it fades out. Keeping it mounted — rather than mounting/
  * unmounting — lets the CSS opacity transition play cleanly in both directions
- * with no flash. `compact` only makes the panel slightly more transparent so the
- * planet glows behind it. The TAKE OFF button appears immediately on landing.
+ * with no flash. The background is translucent (with a backdrop blur) so the
+ * planet stays visible behind it while the text remains legible. The TAKE OFF
+ * button appears immediately on landing.
  */
 export function DetailPanel({
   nav,
   onTakeOff,
-  compact = false,
 }: {
   nav: NavState;
   onTakeOff: () => void;
-  /** Touch HUD: extra transparency so the planet stays visible behind the panel. */
-  compact?: boolean;
 }) {
   const planet = PLANETS[nav.current];
   const glow = planet.glow;
@@ -58,9 +56,9 @@ export function DetailPanel({
       {/* Text panel — always mounted; fades in after the delay, out on take-off. */}
       <div
         aria-hidden={!show}
-        className={`absolute left-1/2 right-auto top-1/2 max-h-[72vh] w-[min(440px,92vw)] -translate-x-1/2 -translate-y-1/2 overflow-auto rounded-[18px] border pb-6 backdrop-blur-md sm:left-auto sm:right-[4%] sm:max-h-[84vh] sm:translate-x-0 ${
-          compact ? 'bg-[#080818]/70' : 'bg-[#080818]/85'
-        } ${show ? 'pointer-events-auto' : 'pointer-events-none'}`}
+        className={`absolute left-1/2 right-auto top-1/2 max-h-[72vh] w-[min(440px,92vw)] -translate-x-1/2 -translate-y-1/2 overflow-auto rounded-[18px] border bg-[#080818]/60 pb-6 backdrop-blur-md sm:left-auto sm:right-[4%] sm:max-h-[84vh] sm:translate-x-0 ${
+          show ? 'pointer-events-auto' : 'pointer-events-none'
+        }`}
         style={{
           borderColor: glow,
           boxShadow: `0 0 50px ${glow}`,

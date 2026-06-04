@@ -27,7 +27,7 @@ export function MobileHud({
           <CoachHint />
         </>
       )}
-      <DetailPanel nav={nav} onTakeOff={() => dispatch({type: 'takeOff'})} compact />
+      <DetailPanel nav={nav} onTakeOff={() => dispatch({type: 'takeOff'})} />
     </>
   );
 }
