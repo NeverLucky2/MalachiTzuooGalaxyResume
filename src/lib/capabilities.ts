@@ -3,8 +3,15 @@ export interface Caps {hasWebGL:boolean; reducedMotion:boolean; coarsePointer:bo
 export function shouldUse3D(c: Caps): boolean {
   if (!c.hasWebGL) return false;
   if (c.reducedMotion) return false;
-  if (c.coarsePointer && c.width < 820) return false;
   return true;
+}
+
+/** Viewport width (px) below which the touch-native compact HUD is used. */
+export const COMPACT_MAX_WIDTH = 768;
+
+/** True when the compact (touch) HUD should render: coarse pointer OR narrow viewport. */
+export function isCompact(c: {coarsePointer: boolean; width: number}): boolean {
+  return c.coarsePointer || c.width < COMPACT_MAX_WIDTH;
 }
 
 export function detectCaps(): Caps {
