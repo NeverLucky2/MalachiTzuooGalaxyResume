@@ -24,3 +24,15 @@ html {
 [data-mode='galaxy'] #resume-2d {
   display: none;
 }
+
+/* Mobile landed panel: fade in (after the reveal delay) instead of popping, so the
+   planet zoom transitions smoothly into the text box. Opacity-only so it never
+   conflicts with the panel's responsive translate positioning. */
+@keyframes detailFadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}

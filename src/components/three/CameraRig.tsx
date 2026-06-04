@@ -15,6 +15,9 @@ import {
 import type {NavState} from '@/lib/navigation';
 
 const BOOST = 1.3;
+// Mobile pulls the landed camera back this much so planets don't fill a small
+// portrait screen too aggressively. Applied only to the landed approach distance.
+const MOBILE_LAND_DIST_SCALE = 1.35;
 // Keep-out radius around the central star the flight path must clear.
 const STAR_RADIUS = 26;
 // Extra margin added to each planet's size to form its keep-out radius (camera).
@@ -44,12 +47,16 @@ export function CameraRig({
   nav,
   positionsRef,
   motion,
+  compact = false,
 }: {
   nav: NavState;
   positionsRef: PositionsRef;
   motion: MotionState;
+  /** Compact (touch) devices pull the landed camera back so planets aren't too close. */
+  compact?: boolean;
 }) {
   const camera = useThree((s) => s.camera);
+  const landDistScale = compact ? MOBILE_LAND_DIST_SCALE : 1;
 
   // Previous nav snapshot, to detect a "startMove" trigger each frame.
   const prevNav = useRef<NavState | null>(null);
@@ -102,7 +109,7 @@ export function CameraRig({
       // target + obstacles at this instant), so moving planets don't cause wobble.
       const Ps = positionsRef.current[nav.current];
       const sizeS = PLANETS[nav.current].size;
-      const tgt = framing(Ps, sizeS, nav.preset, nav.landed);
+      const tgt = framing(Ps, sizeS, nav.preset, nav.landed, landDistScale);
       liftOff.current.set(tgt.pos[0], tgt.pos[1], tgt.pos[2]);
       // Obstacles: the star + every planet EXCEPT the destination.
       const obs: Obstacle[] = [star.current];
@@ -148,7 +155,7 @@ export function CameraRig({
     // --- compute framing target for the focused planet ---
     const P = positionsRef.current[nav.current];
     const size = PLANETS[nav.current].size;
-    const target = framing(P, size, nav.preset, nav.landed);
+    const target = framing(P, size, nav.preset, nav.landed, landDistScale);
     targetPos.current.set(target.pos[0], target.pos[1], target.pos[2]);
     targetLook.current.set(target.look[0], target.look[1], target.look[2]);
 

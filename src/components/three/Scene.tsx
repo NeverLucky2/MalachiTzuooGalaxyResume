@@ -88,7 +88,7 @@ export function Scene({
               same-priority useFrame callbacks in mount (JSX) order, and CameraRig
               is the sole owner of trip-start — it must snapshot motion.shipFrom
               from the ship's OLD position before Ship moves it. See CameraRig.tsx. */}
-          <CameraRig nav={nav} positionsRef={positionsRef} motion={motion.current} />
+          <CameraRig nav={nav} positionsRef={positionsRef} motion={motion.current} compact={isCompact} />
           <Ship nav={nav} positionsRef={positionsRef} motion={motion.current} />
           <PlanetLabels
             current={nav.current}

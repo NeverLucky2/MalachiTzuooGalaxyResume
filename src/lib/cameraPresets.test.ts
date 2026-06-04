@@ -16,6 +16,14 @@ describe('framing', () => {
     const dist = (c:[number,number,number]) => Math.hypot(c[0]-P[0],c[1]-P[1],c[2]-P[2]);
     expect(dist(near.pos)).toBeLessThan(dist(far.pos));
   });
+  it('landDistScale pulls the landed camera farther back (mobile zoom-out)', () => {
+    const dist = (c:[number,number,number]) => Math.hypot(c[0]-P[0],c[1]-P[1],c[2]-P[2]);
+    const near = framing(P, 1.75, 'SUN LEFT', true);
+    const farther = framing(P, 1.75, 'SUN LEFT', true, 1.35);
+    expect(dist(farther.pos)).toBeGreaterThan(dist(near.pos));
+    // The scale only affects the landed distance, not the look target.
+    expect(farther.look).toEqual(near.look);
+  });
   it('TOP-DOWN looks at the origin from high above', () => {
     const f = framing(P, 1.75, 'TOP-DOWN', false);
     expect(f.pos[1]).toBeGreaterThan(150);

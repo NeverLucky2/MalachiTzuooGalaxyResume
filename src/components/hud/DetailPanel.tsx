@@ -62,7 +62,13 @@ export function DetailPanel({
           className={`pointer-events-auto absolute left-1/2 right-auto top-1/2 max-h-[72vh] w-[min(440px,92vw)] -translate-x-1/2 -translate-y-1/2 overflow-auto rounded-[18px] border pb-6 backdrop-blur-md sm:left-auto sm:right-[4%] sm:max-h-[84vh] sm:translate-x-0 ${
             compact ? 'bg-[#080818]/70' : 'bg-[#080818]/85'
           }`}
-          style={{borderColor: glow, boxShadow: `0 0 50px ${glow}`}}
+          style={{
+            borderColor: glow,
+            boxShadow: `0 0 50px ${glow}`,
+            // Compact: the panel mounts after the reveal delay, so this plays once
+            // as a fade-in. Desktop shows instantly with no animation.
+            animation: compact ? 'detailFadeIn 0.45s ease-out' : undefined,
+          }}
         >
           <div className="border-b border-white/10 px-[26px] pb-4 pt-[22px]">
             <h2 className="m-0 font-display text-[22px]">{planet.label}</h2>
