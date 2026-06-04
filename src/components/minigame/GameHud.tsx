@@ -28,7 +28,8 @@ export function GameHud({
       <button
         type="button"
         onClick={onExit}
-        className="pointer-events-auto absolute left-[calc(12px+env(safe-area-inset-left))] top-[calc(12px+env(safe-area-inset-top))] rounded-full border border-[#21e6ff]/50 bg-[#0a0a1f]/70 px-3 py-2 font-display text-xs text-cyan-200 backdrop-blur-md focus-visible:outline focus-visible:outline-2 focus-visible:outline-cyan-300"
+        aria-label="Exit game"
+        className="pointer-events-auto absolute left-[calc(12px+env(safe-area-inset-left))] top-[calc(12px+env(safe-area-inset-top))] rounded-full border border-[#21e6ff]/50 bg-[#0a0a1f]/70 px-3 py-2 font-display text-xs text-cyan-200 backdrop-blur-md focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-cyan-300"
       >
         ✕ Exit
       </button>
@@ -46,7 +47,7 @@ export function GameHud({
                 key={d}
                 type="button"
                 onClick={() => onStart(d)}
-                className="rounded-xl border border-[#21e6ff]/50 bg-[#0a0a1f]/60 px-5 py-3 font-display text-sm uppercase tracking-wide text-cyan-100 shadow-[0_0_14px_rgba(33,230,255,.3)] focus-visible:outline focus-visible:outline-2 focus-visible:outline-cyan-300"
+                className="rounded-xl border border-[#21e6ff]/50 bg-[#0a0a1f]/60 px-5 py-3 font-display text-sm uppercase tracking-wide text-cyan-100 shadow-[0_0_14px_rgba(33,230,255,.3)] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-cyan-300"
               >
                 {d}
               </button>
@@ -69,13 +70,13 @@ export function GameHud({
             <div className="mt-1 text-sm text-cyan-200">BEST {state.best}</div>
           </div>
           <div className="mt-2 flex flex-wrap justify-center gap-3">
-            <button type="button" onClick={onRetry} className="rounded-xl border border-[#ff3df0] bg-gradient-to-r from-[#ff3df0]/30 to-[#21e6ff]/30 px-5 py-3 font-display text-sm font-bold text-white shadow-[0_0_16px_#ff3df0] focus-visible:outline focus-visible:outline-2 focus-visible:outline-cyan-300">
+            <button type="button" onClick={onRetry} className="rounded-xl border border-[#ff3df0] bg-gradient-to-r from-[#ff3df0]/30 to-[#21e6ff]/30 px-5 py-3 font-display text-sm font-bold text-white shadow-[0_0_16px_#ff3df0] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-cyan-300">
               ↻ Retry
             </button>
-            <button type="button" onClick={onMenu} className="rounded-xl border border-[#21e6ff]/50 bg-[#0a0a1f]/60 px-5 py-3 font-display text-sm text-cyan-100 focus-visible:outline focus-visible:outline-2 focus-visible:outline-cyan-300">
+            <button type="button" onClick={onMenu} className="rounded-xl border border-[#21e6ff]/50 bg-[#0a0a1f]/60 px-5 py-3 font-display text-sm text-cyan-100 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-cyan-300">
               Change difficulty
             </button>
-            <button type="button" onClick={onExit} className="rounded-xl border border-[#21e6ff]/50 bg-[#0a0a1f]/60 px-5 py-3 font-display text-sm text-cyan-100 focus-visible:outline focus-visible:outline-2 focus-visible:outline-cyan-300">
+            <button type="button" onClick={onExit} className="rounded-xl border border-[#21e6ff]/50 bg-[#0a0a1f]/60 px-5 py-3 font-display text-sm text-cyan-100 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-cyan-300">
               Exit
             </button>
           </div>
