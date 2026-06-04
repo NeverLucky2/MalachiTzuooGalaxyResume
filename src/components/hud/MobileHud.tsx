@@ -1,5 +1,6 @@
 'use client';
 import type {NavState, NavAction} from '@/lib/navigation';
+import {IdentityChip} from './IdentityChip';
 import {MobileMenu} from './MobileMenu';
 import {ThumbDock} from './ThumbDock';
 import {CoachHint} from './CoachHint';
@@ -22,6 +23,7 @@ export function MobileHud({
     <>
       {!nav.landed && (
         <>
+          <IdentityChip />
           <MobileMenu nav={nav} dispatch={dispatch} onSkip={onSkip} />
           <ThumbDock nav={nav} dispatch={dispatch} />
           <CoachHint />

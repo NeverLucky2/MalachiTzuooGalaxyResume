@@ -21,11 +21,12 @@ describe('MobileMenu', () => {
     expect(dispatch).toHaveBeenCalledWith({type: 'selectAndLand', index: 1});
   });
 
-  it('Résumé button calls onSkip', () => {
+  it('Resume button calls onSkip', () => {
     const onSkip = vi.fn();
     render(<MobileMenu nav={initialNav()} dispatch={vi.fn()} onSkip={onSkip} />);
     fireEvent.click(screen.getByRole('button', {name: /menu/i}));
-    fireEvent.click(screen.getByRole('button', {name: /résumé/i}));
+    // The 📄 icon disambiguates the escape button from the "RESUME" starmap row.
+    fireEvent.click(screen.getByRole('button', {name: /📄\s*resume/i}));
     expect(onSkip).toHaveBeenCalledTimes(1);
   });
 });

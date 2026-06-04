@@ -2,6 +2,7 @@ import {describe, it, expect, vi} from 'vitest';
 import {render, screen, act} from '@testing-library/react';
 import {DetailPanel} from './DetailPanel';
 import {initialNav} from '@/lib/navigation';
+import {PLANETS} from '@/data/planets';
 
 describe('DetailPanel', () => {
   it('reveals content + header after the delay; TAKE OFF is immediate', () => {
@@ -18,6 +19,35 @@ describe('DetailPanel', () => {
       });
       expect(screen.getByRole('heading', {name: /about/i})).toBeInTheDocument();
       expect(screen.getByText(/Chicago, IL/i)).toBeInTheDocument();
+    } finally {
+      vi.useRealTimers();
+    }
+  });
+
+  it('on the RESUME planet, shows the full résumé minus About, plus the PDF download', () => {
+    vi.useFakeTimers();
+    try {
+      const resumeIdx = PLANETS.findIndex((p) => p.id === 'resume');
+      render(
+        <DetailPanel
+          nav={{...initialNav(), current: resumeIdx, landed: true}}
+          onTakeOff={() => {}}
+        />,
+      );
+      act(() => {
+        vi.advanceTimersByTime(1000);
+      });
+      // The résumé body renders other sections inside the panel...
+      expect(screen.getByRole('heading', {name: /experience/i})).toBeInTheDocument();
+      expect(screen.getByRole('heading', {name: /projects/i})).toBeInTheDocument();
+      expect(screen.getByRole('heading', {name: /contact/i})).toBeInTheDocument();
+      // ...but About is omitted (it has its own planet, so it's redundant here).
+      expect(screen.queryByRole('heading', {name: /^about$/i})).toBeNull();
+      // The PDF download stays available.
+      expect(screen.getByRole('link', {name: /download resume/i})).toHaveAttribute(
+        'href',
+        '/assets/Tzuoo_Malachi_Resume_.pdf',
+      );
     } finally {
       vi.useRealTimers();
     }
