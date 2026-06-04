@@ -27,14 +27,14 @@ export function DetailPanel({
       <button
         type="button"
         onClick={onTakeOff}
-        className="pointer-events-auto absolute bottom-5 left-6 rounded-xl border border-[#ff3df0] bg-gradient-to-r from-[#ff3df0]/30 to-[#21e6ff]/30 px-[18px] py-3 font-display text-[13px] font-bold tracking-wide text-white shadow-[0_0_16px_#ff3df0] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-cyan-300"
+        className="pointer-events-auto absolute bottom-[calc(1.25rem+env(safe-area-inset-bottom))] left-[calc(1.5rem+env(safe-area-inset-left))] rounded-xl border border-[#ff3df0] bg-gradient-to-r from-[#ff3df0]/30 to-[#21e6ff]/30 px-[18px] py-3 font-display text-[13px] font-bold tracking-wide text-white shadow-[0_0_16px_#ff3df0] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-cyan-300"
       >
         🚀 TAKE OFF
       </button>
 
       {/* Panel (right side) */}
       <div
-        className="pointer-events-auto absolute right-[4%] top-1/2 max-h-[84vh] w-[min(440px,92vw)] -translate-y-1/2 overflow-auto rounded-[18px] border bg-[#080818]/85 pb-6 backdrop-blur-md"
+        className="pointer-events-auto absolute left-1/2 right-auto top-1/2 max-h-[72vh] w-[min(440px,92vw)] -translate-x-1/2 -translate-y-1/2 overflow-auto rounded-[18px] border bg-[#080818]/85 pb-6 backdrop-blur-md sm:left-auto sm:right-[4%] sm:max-h-[84vh] sm:translate-x-0"
         style={{borderColor: glow, boxShadow: `0 0 50px ${glow}`}}
       >
         <div className="border-b border-white/10 px-[26px] pb-4 pt-[22px]">

@@ -66,7 +66,7 @@ export function GalaxyExperience() {
     <button
       type="button"
       onClick={() => setMode('galaxy')}
-      className="fixed right-4 top-4 z-30 rounded-xl border border-cyan-400/60 bg-[#0a0a1f]/70 px-4 py-2.5 font-display text-sm text-cyan-200 shadow-[0_0_16px_rgba(33,230,255,.4)] backdrop-blur-md transition hover:bg-[#0a0a1f]/90 hover:shadow-[0_0_22px_rgba(33,230,255,.6)] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-cyan-300"
+      className="fixed right-[calc(1rem+env(safe-area-inset-right))] top-[calc(1rem+env(safe-area-inset-top))] z-30 rounded-xl border border-cyan-400/60 bg-[#0a0a1f]/70 px-4 py-2.5 font-display text-sm text-cyan-200 shadow-[0_0_16px_rgba(33,230,255,.4)] backdrop-blur-md transition hover:bg-[#0a0a1f]/90 hover:shadow-[0_0_22px_rgba(33,230,255,.6)] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-cyan-300"
     >
       🚀 Galaxy view
     </button>
