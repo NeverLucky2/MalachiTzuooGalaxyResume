@@ -1,19 +1,22 @@
 'use client';
-import {useEffect, useState} from 'react';
+import {useState} from 'react';
 
 const KEY = 'galaxy.coach.dismissed';
 
 /** One-time, dismissible hint shown on first compact galaxy load. */
 export function CoachHint() {
-  const [show, setShow] = useState(false);
-
-  useEffect(() => {
+  // Decide visibility once from storage via a lazy initializer (runs on the client
+  // only — this component is never server-rendered, living inside the ssr:false
+  // Scene). Computing it here instead of in an effect avoids a setState-in-effect
+  // cascading render, and shows nothing for users who already dismissed it.
+  const [show, setShow] = useState<boolean>(() => {
+    if (typeof window === 'undefined') return false;
     try {
-      if (localStorage.getItem(KEY) !== '1') setShow(true);
+      return localStorage.getItem(KEY) !== '1';
     } catch {
-      /* storage blocked (private mode) → just don't show */
+      return false;
     }
-  }, []);
+  });
 
   if (!show) return null;
 

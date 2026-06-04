@@ -16,6 +16,10 @@ const N = PLANETS.length;
  * touch that begins on the panel never reaches this canvas handler — it scrolls.
  * Only touches that begin on the bare canvas (around the planet) can take off.
  *
+ * Freshness comes from re-subscribing the window listener whenever `nav`/`enabled`
+ * change (cheap: one add/remove per travel or land), so no refs are read or
+ * written during render. `start` is the lone ref — written only in handlers.
+ *
  * Returns `{onPointerDown}` to attach to <Canvas> (composed with the free-look
  * drag handler). No-ops entirely when `enabled` is false.
  */
@@ -28,25 +32,24 @@ export function useTouchGestures({
   dispatch: React.Dispatch<NavAction>;
   enabled: boolean;
 }) {
-  const navRef = useRef(nav);
-  navRef.current = nav;
-  const enabledRef = useRef(enabled);
-  enabledRef.current = enabled;
   const start = useRef<{x: number; y: number; t: number} | null>(null);
 
-  const onPointerDown = useCallback((e: {clientX: number; clientY: number}) => {
-    if (!enabledRef.current) return;
-    start.current = {x: e.clientX, y: e.clientY, t: performance.now()};
-  }, []);
+  const onPointerDown = useCallback(
+    (e: {clientX: number; clientY: number}) => {
+      if (!enabled) return;
+      start.current = {x: e.clientX, y: e.clientY, t: performance.now()};
+    },
+    [enabled],
+  );
 
   useEffect(() => {
     const onUp = (e: PointerEvent) => {
       const s = start.current;
       start.current = null;
-      if (!enabledRef.current || !s) return;
+      if (!enabled || !s) return;
       const g = classifyGesture(e.clientX - s.x, e.clientY - s.y, performance.now() - s.t);
       if (g === 'look') return;
-      if (navRef.current.landed) {
+      if (nav.landed) {
         if (g === 'takeOff') dispatch({type: 'takeOff'});
         return;
       }
@@ -57,7 +60,7 @@ export function useTouchGestures({
     };
     window.addEventListener('pointerup', onUp);
     return () => window.removeEventListener('pointerup', onUp);
-  }, [dispatch]);
+  }, [nav, dispatch, enabled]);
 
   return {onPointerDown};
 }
