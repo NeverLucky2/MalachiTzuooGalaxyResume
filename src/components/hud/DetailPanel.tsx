@@ -65,9 +65,9 @@ export function DetailPanel({
           style={{
             borderColor: glow,
             boxShadow: `0 0 50px ${glow}`,
-            // Compact: the panel mounts after the reveal delay, so this plays once
-            // as a fade-in. Desktop shows instantly with no animation.
-            animation: compact ? 'detailFadeIn 0.45s ease-out' : undefined,
+            // Fade in on every landing (desktop and mobile). On compact the panel
+            // mounts after the reveal delay, so the fade follows the zoom.
+            animation: 'detailFadeIn 0.45s ease-out',
           }}
         >
           <div className="border-b border-white/10 px-[26px] pb-4 pt-[22px]">

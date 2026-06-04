@@ -25,9 +25,9 @@ html {
   display: none;
 }
 
-/* Mobile landed panel: fade in (after the reveal delay) instead of popping, so the
-   planet zoom transitions smoothly into the text box. Opacity-only so it never
-   conflicts with the panel's responsive translate positioning. */
+/* Landed detail panel: fade in on each landing (desktop + mobile) instead of
+   popping. On mobile this follows the reveal delay + zoom. Opacity-only so it
+   never conflicts with the panel's responsive translate positioning. */
 @keyframes detailFadeIn {
   from {
     opacity: 0;
