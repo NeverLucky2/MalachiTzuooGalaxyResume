@@ -1,6 +1,5 @@
 'use client';
 import {useEffect, useState} from 'react';
-import {flushSync} from 'react-dom';
 import {PLANETS} from '@/data/planets';
 import {CONTENT} from '@/data/content';
 import type {ContentBlock} from '@/data/types';
@@ -30,7 +29,7 @@ export function MobileMenu({
   useEffect(() => {
     if (!open) return;
     const onKey = (e: KeyboardEvent) => {
-      if (e.key === 'Escape') flushSync(() => setOpen(false));
+      if (e.key === 'Escape') setOpen(false);
     };
     window.addEventListener('keydown', onKey);
     return () => window.removeEventListener('keydown', onKey);
@@ -42,7 +41,7 @@ export function MobileMenu({
         type="button"
         aria-label="Menu"
         aria-expanded={open}
-        onClick={() => flushSync(() => setOpen(true))}
+        onClick={() => setOpen(true)}
         className="pointer-events-auto fixed right-[calc(12px+env(safe-area-inset-right))] top-[calc(12px+env(safe-area-inset-top))] z-30 flex h-11 w-11 items-center justify-center rounded-full border border-[#21e6ff]/50 bg-[#0a0a1f]/70 text-xl text-[#9fe9ff] shadow-[0_0_14px_rgba(33,230,255,.3)] backdrop-blur-md focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-cyan-300"
       >
         ☰
@@ -51,7 +50,7 @@ export function MobileMenu({
       {open && (
         <div
           className="fixed inset-0 z-40 bg-[#05030f]/90 backdrop-blur-md"
-          onClick={() => flushSync(() => setOpen(false))}
+          onClick={() => setOpen(false)}
         >
           <div
             className="flex h-full flex-col gap-4 px-5 pb-[calc(16px+env(safe-area-inset-bottom))] pt-[calc(16px+env(safe-area-inset-top))]"
@@ -69,7 +68,7 @@ export function MobileMenu({
               <button
                 type="button"
                 aria-label="Close menu"
-                onClick={() => flushSync(() => setOpen(false))}
+                onClick={() => setOpen(false)}
                 className="text-2xl leading-none text-[#9fe9ff] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-cyan-300"
               >
                 ✕
@@ -86,7 +85,7 @@ export function MobileMenu({
                   key={p.id}
                   onClick={() => {
                     dispatch({type: 'selectAndLand', index: i});
-                    flushSync(() => setOpen(false));
+                    setOpen(false);
                   }}
                   className={`flex items-center gap-3 rounded-xl px-3 py-3 text-left text-sm text-[#e7f6ff] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-1 focus-visible:outline-cyan-300 ${
                     i === nav.current ? 'bg-[#21e6ff]/[.12] shadow-[inset_0_0_0_1px_rgba(33,230,255,.4)]' : ''
@@ -106,7 +105,7 @@ export function MobileMenu({
               <button
                 type="button"
                 onClick={() => {
-                  flushSync(() => setOpen(false));
+                  setOpen(false);
                   onSkip();
                 }}
                 className="pointer-events-auto flex-1 rounded-xl border border-[#21e6ff]/50 bg-[#0a0a1f]/60 py-3 text-center font-display text-sm text-cyan-200"
