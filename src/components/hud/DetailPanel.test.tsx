@@ -1,5 +1,5 @@
 import {describe, it, expect, vi} from 'vitest';
-import {render, screen} from '@testing-library/react';
+import {render, screen, act} from '@testing-library/react';
 import {DetailPanel} from './DetailPanel';
 import {initialNav} from '@/lib/navigation';
 
@@ -17,5 +17,21 @@ describe('DetailPanel', () => {
     const btn = screen.getByRole('button', {name: /take off/i});
     btn.click();
     expect(onTakeOff).toHaveBeenCalledTimes(1);
+  });
+
+  it('compact: holds the text panel back until after the zoom, but shows TAKE OFF immediately', () => {
+    vi.useFakeTimers();
+    try {
+      render(<DetailPanel nav={{...initialNav(), landed: true}} onTakeOff={() => {}} compact />);
+      // TAKE OFF appears right away; the text heading is delayed so the zoom shows.
+      expect(screen.getByRole('button', {name: /take off/i})).toBeInTheDocument();
+      expect(screen.queryByRole('heading', {name: /about/i})).toBeNull();
+      act(() => {
+        vi.advanceTimersByTime(1000);
+      });
+      expect(screen.getByRole('heading', {name: /about/i})).toBeInTheDocument();
+    } finally {
+      vi.useRealTimers();
+    }
   });
 });
