@@ -31,10 +31,12 @@ export function Ship({
   nav,
   positionsRef,
   motion,
+  onLaunch,
 }: {
   nav: NavState;
   positionsRef: PositionsRef;
   motion: MotionState;
+  onLaunch?: () => void;
 }) {
   const shipRef = useRef<THREE.Group>(null);
   const prevShipPos = useRef(new THREE.Vector3());
@@ -93,6 +95,24 @@ export function Ship({
   return (
     <group ref={shipRef}>
       <ShipModel />
+      {onLaunch && (
+        <mesh
+          name="minigame-launch"
+          onClick={(e) => {
+            e.stopPropagation();
+            onLaunch();
+          }}
+          onPointerOver={() => {
+            document.body.style.cursor = 'pointer';
+          }}
+          onPointerOut={() => {
+            document.body.style.cursor = '';
+          }}
+        >
+          <sphereGeometry args={[2.4, 12, 12]} />
+          <meshBasicMaterial transparent opacity={0} depthWrite={false} />
+        </mesh>
+      )}
     </group>
   );
 }

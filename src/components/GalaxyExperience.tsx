@@ -4,6 +4,7 @@ import dynamic from 'next/dynamic';
 import {detectCaps, shouldUse3D} from '@/lib/capabilities';
 import {initialNav, navReducer} from '@/lib/navigation';
 import {RESUME_HEADING_ID} from '@/components/fallback/FallbackResume';
+import {AsteroidGame} from '@/components/minigame/AsteroidGame';
 
 const Scene = dynamic(() => import('@/components/three/Scene').then(m => m.Scene), {ssr: false});
 
@@ -26,6 +27,7 @@ export function GalaxyExperience() {
     reducedMotion: false,
   });
   const [nav, dispatch] = useReducer(navReducer, undefined, initialNav);
+  const [minigameOpen, setMinigameOpen] = useState(false);
 
   // Decide the initial view once on the client, where we can detect caps.
   useEffect(() => {
@@ -51,12 +53,17 @@ export function GalaxyExperience() {
 
   if (mode === 'galaxy') {
     return (
-      <Scene
-        nav={nav}
-        dispatch={dispatch}
-        onSkip={showResume}
-        reducedMotion={caps.reducedMotion}
-      />
+      <>
+        <Scene
+          nav={nav}
+          dispatch={dispatch}
+          onSkip={showResume}
+          reducedMotion={caps.reducedMotion}
+          paused={minigameOpen}
+          onLaunchMinigame={() => setMinigameOpen(true)}
+        />
+        {minigameOpen && <AsteroidGame onExit={() => setMinigameOpen(false)} />}
+      </>
     );
   }
 

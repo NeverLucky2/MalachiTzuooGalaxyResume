@@ -36,7 +36,9 @@ export function useGameEngine({
   onGameOver: (score: number) => void;
 }) {
   const world = useRef(createWorld());
-  const rng = useRef(makeRng((Date.now() & 0xffff) || 1));
+  // Seed with 1 initially; useEffect (not render) reseeds with Date.now() on
+  // mount and whenever difficulty changes, avoiding the react/no-impure-calls rule.
+  const rng = useRef(makeRng(1));
   const ended = useRef(false);
 
   // Fresh world whenever a new run starts (difficulty changes / remount).

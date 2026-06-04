@@ -22,12 +22,16 @@ export function Scene({
   dispatch,
   onSkip,
   reducedMotion = false,
+  paused = false,
+  onLaunchMinigame,
 }: {
   nav: NavState;
   dispatch: React.Dispatch<NavAction>;
   onSkip: () => void;
   /** When true (prefers-reduced-motion + forced galaxy), damp ambient drift. */
   reducedMotion?: boolean;
+  paused?: boolean;
+  onLaunchMinigame?: () => void;
 }) {
   const positionsRef = useRef<[number, number, number][]>(PLANETS.map(() => [0, 0, 0]));
   // Shared motion state (travelT, from-snapshots, look/ship pos, free-look) that
@@ -63,7 +67,7 @@ export function Scene({
         <Canvas
           camera={{fov: 55, position: [0, 95, 210], near: 0.1, far: 4000}}
           dpr={[1, 2]}
-          frameloop={frameloop}
+          frameloop={paused ? 'never' : frameloop}
           gl={{antialias: true}}
           onPointerDown={(e) => onPointerDown(e)}
         >
@@ -84,7 +88,7 @@ export function Scene({
               is the sole owner of trip-start — it must snapshot motion.shipFrom
               from the ship's OLD position before Ship moves it. See CameraRig.tsx. */}
           <CameraRig nav={nav} positionsRef={positionsRef} motion={motion.current} compact={isCompact} />
-          <Ship nav={nav} positionsRef={positionsRef} motion={motion.current} />
+          <Ship nav={nav} positionsRef={positionsRef} motion={motion.current} onLaunch={onLaunchMinigame} />
           <PlanetLabels
             current={nav.current}
             landed={nav.landed}
