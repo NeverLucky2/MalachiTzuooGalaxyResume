@@ -3,6 +3,7 @@ import {useEffect, useState} from 'react';
 import {PLANETS} from '@/data/planets';
 import {CONTENT} from '@/data/content';
 import {ContentRenderer} from '@/components/fallback/ContentRenderer';
+import {ResumeSections} from '@/components/fallback/ResumeSections';
 import type {NavState} from '@/lib/navigation';
 
 /** Delay (ms) before the text panel fades in after landing, so the zoom plays first. */
@@ -72,7 +73,14 @@ export function DetailPanel({
           <div className="mt-1 text-[13px] opacity-65">{planet.subtitle}</div>
         </div>
         <div className="space-y-3 px-[26px] pt-[18px]">
-          <ContentRenderer blocks={CONTENT[planet.id]} />
+          {/* The RESUME planet shows the résumé minus About (it has its own
+              planet); the full 2D résumé view still shows everything. Every
+              other planet shows just its own section. */}
+          {planet.id === 'resume' ? (
+            <ResumeSections idPrefix="resume-panel-" exclude={['about']} />
+          ) : (
+            <ContentRenderer blocks={CONTENT[planet.id]} />
+          )}
         </div>
       </div>
     </div>

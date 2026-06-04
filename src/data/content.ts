@@ -2,7 +2,12 @@ import type {ContentBlock, SectionId} from './types';
 
 export const CONTENT: Record<SectionId, ContentBlock[]> = {
   about: [
-    {kind:'paragraph', text:'Software developer with a strong engineering foundation — Python, cloud-native delivery, CI/CD automation, and generative-AI tooling. AWS Certified Developer based in Chicago, shipping production apps in cross-functional teams.'},
+    {kind:'paragraph', text:"AWS Certified software developer in Chicago with a strong engineering foundation — Python, cloud-native delivery, CI/CD automation, and generative-AI tooling. On a team I naturally take the planning seat: I like mapping out who owns which slice of the work so the whole group moves efficiently, then keeping everyone aligned as it ships. High pressure doesn't rattle me — two holiday peak seasons coordinating high-volume logistics have taught me to stay calm, prioritize hard, and keep things moving when the load spikes."},
+    {kind:'cards', items:[
+      {label:'🤝 In a team', value:'I take the planning seat — mapping who owns which slice so the group moves efficiently.'},
+      {label:'🔥 Under pressure', value:'Calm at peak. Two holiday seasons of high-volume logistics taught me to prioritize and keep things shipping.'},
+      {label:'🎯 Ownership & comms', value:'I take work end-to-end and over-communicate — blockers surfaced early, no late surprises.'},
+    ]},
     {kind:'cards', items:[
       {label:'📍 Location', value:'Chicago, IL'},
       {label:'🎓 Study', value:'DePaul (BS Software Dev) · Linköping (BBA)'},
@@ -41,7 +46,7 @@ export const CONTENT: Record<SectionId, ContentBlock[]> = {
   ],
   resume: [
     {kind:'cards', items:[{label:'🏅 AWS Certified Developer – Associate', value:'Valid 2024 – 2027. EC2, Lambda, DynamoDB, SNS/SQS, CodePipeline.'}]},
-    {kind:'paragraph', text:'Grab the full PDF for the complete history.'},
+    {kind:'paragraph', text:'Prefer a printable copy? Download the formatted PDF.'},
     {kind:'download', label:'⤓ Download resume (PDF)', href:'/assets/Tzuoo_Malachi_Resume_.pdf'},
   ],
   contact: [
