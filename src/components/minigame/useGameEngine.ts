@@ -20,17 +20,19 @@ const ZERO_TARGET = {x: 0, y: 0};
 /**
  * Drives the minigame each frame: steps the pure world, maps the latest pointer
  * to a play-plane target, writes the ship's transform and every asteroid
- * instance matrix, and fires `onGameOver(score, best)` exactly once on death.
+ * instance matrix, and fires `onGameOver(score)` exactly once on death.
  */
 export function useGameEngine({
   difficulty,
   pointerRef,
+  scoreRef,
   shipRef,
   asteroidsRef,
   onGameOver,
 }: {
   difficulty: Difficulty;
   pointerRef: RefObject<{x: number; y: number} | null>;
+  scoreRef: RefObject<number>;
   shipRef: RefObject<THREE.Group | null>;
   asteroidsRef: RefObject<THREE.InstancedMesh | null>;
   onGameOver: (score: number) => void;
@@ -80,6 +82,8 @@ export function useGameEngine({
       }
       mesh.instanceMatrix.needsUpdate = true;
     }
+
+    scoreRef.current = scoreFromDistance(w.distance);
 
     if (!w.alive && !ended.current) {
       ended.current = true;

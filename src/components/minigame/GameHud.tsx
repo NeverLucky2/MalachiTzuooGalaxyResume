@@ -5,9 +5,9 @@ import type {GameState} from '@/lib/minigame/gameState';
 const DIFFICULTIES: Difficulty[] = ['easy', 'normal', 'hard'];
 
 /**
- * DOM overlay for the asteroid game. Renders the start menu, the live score, or
- * the game-over card depending on phase. Purely presentational — every action is
- * a callback owned by AsteroidGame.
+ * DOM overlay for the asteroid game. Renders the start menu and the game-over
+ * card depending on phase (the live score is a separate `LiveScore` leaf).
+ * Purely presentational — every action is a callback owned by AsteroidGame.
  */
 export function GameHud({
   state,
@@ -53,12 +53,6 @@ export function GameHud({
               </button>
             ))}
           </div>
-        </div>
-      )}
-
-      {state.phase === 'playing' && (
-        <div className="absolute right-[calc(14px+env(safe-area-inset-right))] top-[calc(12px+env(safe-area-inset-top))] font-display text-2xl font-black tabular-nums [text-shadow:0_0_10px_rgba(33,230,255,.6)]">
-          {state.score}
         </div>
       )}
 

@@ -6,6 +6,7 @@ import {loadBest, saveBest} from '@/lib/minigame/score';
 import type {Difficulty} from '@/lib/minigame/difficulty';
 import {GameScene} from './GameScene';
 import {GameHud} from './GameHud';
+import {LiveScore} from './LiveScore';
 
 /**
  * Full-screen minigame overlay. Owns the game state machine, tracks the pointer
@@ -16,6 +17,7 @@ import {GameHud} from './GameHud';
 export function AsteroidGame({onExit}: {onExit: () => void}) {
   const [state, dispatch] = useReducer(gameReducer, undefined, () => initialGameState(loadBest()));
   const pointerRef = useRef<{x: number; y: number}>({x: 0, y: 0});
+  const scoreRef = useRef(0);
   const containerRef = useRef<HTMLDivElement>(null);
 
   // Esc exits from anywhere in the game.
@@ -50,7 +52,7 @@ export function AsteroidGame({onExit}: {onExit: () => void}) {
     >
       <Canvas camera={{position: [6.5, 4.5, 14], fov: 60, near: 0.1, far: 400}} dpr={[1, 2]} gl={{antialias: true}}>
         {state.phase === 'playing' && (
-          <GameScene difficulty={state.difficulty} pointerRef={pointerRef} onGameOver={onGameOver} />
+          <GameScene difficulty={state.difficulty} pointerRef={pointerRef} scoreRef={scoreRef} onGameOver={onGameOver} />
         )}
       </Canvas>
 
@@ -61,6 +63,7 @@ export function AsteroidGame({onExit}: {onExit: () => void}) {
         onMenu={() => dispatch({type: 'menu'})}
         onExit={onExit}
       />
+      {state.phase === 'playing' && <LiveScore scoreRef={scoreRef} />}
     </div>
   );
 }

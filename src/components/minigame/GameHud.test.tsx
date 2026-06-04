@@ -1,7 +1,7 @@
 import {describe, it, expect, vi} from 'vitest';
 import {render, screen, fireEvent} from '@testing-library/react';
 import {GameHud} from './GameHud';
-import {initialGameState, gameReducer} from '@/lib/minigame/gameState';
+import {initialGameState} from '@/lib/minigame/gameState';
 
 describe('GameHud', () => {
   it('menu shows three difficulties and Exit; picking one calls onStart', () => {
@@ -13,12 +13,6 @@ describe('GameHud', () => {
       expect(screen.getByRole('button', {name})).toBeInTheDocument();
     fireEvent.click(screen.getByRole('button', {name: /hard/i}));
     expect(onStart).toHaveBeenCalledWith('hard');
-  });
-
-  it('playing shows the live score', () => {
-    const playing = gameReducer(initialGameState(0), {type: 'start', difficulty: 'normal'});
-    render(<GameHud state={{...playing, score: 137}} onStart={vi.fn()} onRetry={vi.fn()} onMenu={vi.fn()} onExit={vi.fn()} />);
-    expect(screen.getByText(/137/)).toBeInTheDocument();
   });
 
   it('game over shows score + best and wires Retry / Change / Exit', () => {

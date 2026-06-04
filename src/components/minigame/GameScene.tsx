@@ -16,16 +16,18 @@ import {useGameEngine} from './useGameEngine';
 export function GameScene({
   difficulty,
   pointerRef,
+  scoreRef,
   onGameOver,
 }: {
   difficulty: Difficulty;
   pointerRef: RefObject<{x: number; y: number} | null>;
+  scoreRef: RefObject<number>;
   onGameOver: (score: number) => void;
 }) {
   const shipRef = useRef<THREE.Group>(null);
   const asteroidsRef = useRef<THREE.InstancedMesh>(null);
 
-  useGameEngine({difficulty, pointerRef, shipRef, asteroidsRef, onGameOver});
+  useGameEngine({difficulty, pointerRef, scoreRef, shipRef, asteroidsRef, onGameOver});
 
   return (
     <>
