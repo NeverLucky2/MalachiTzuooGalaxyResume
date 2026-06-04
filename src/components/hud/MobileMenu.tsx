@@ -110,7 +110,7 @@ export function MobileMenu({
                 }}
                 className="pointer-events-auto flex-1 rounded-xl border border-[#21e6ff]/50 bg-[#0a0a1f]/60 py-3 text-center font-display text-sm text-cyan-200"
               >
-                📄 Résumé
+                📄 Resume
               </button>
               {PDF && (
                 <a
