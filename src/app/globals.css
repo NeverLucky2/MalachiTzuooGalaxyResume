@@ -25,14 +25,22 @@ html {
   display: none;
 }
 
-/* Landed detail panel: fade in on each landing (desktop + mobile) instead of
-   popping. On mobile this follows the reveal delay + zoom. Opacity-only so it
-   never conflicts with the panel's responsive translate positioning. */
+/* Landed detail panel: fade in after the reveal delay, and fade out on take-off
+   (desktop + mobile). Opacity-only so it never conflicts with the panel's
+   responsive translate positioning. */
 @keyframes detailFadeIn {
   from {
     opacity: 0;
   }
   to {
     opacity: 1;
+  }
+}
+@keyframes detailFadeOut {
+  from {
+    opacity: 1;
+  }
+  to {
+    opacity: 0;
   }
 }
