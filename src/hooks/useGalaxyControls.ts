@@ -23,16 +23,22 @@ export function useGalaxyControls({
   nav,
   dispatch,
   motion,
+  compact = false,
 }: {
   nav: NavState;
   dispatch: React.Dispatch<NavAction>;
   motion: MotionState;
+  /** Compact (touch) mode: a tap on any planet flies in and lands in one action. */
+  compact?: boolean;
 }) {
   const [boost, setBoost] = useState(false);
 
   // Keep latest nav in a ref so window listeners (bound once) read fresh state.
   const navRef = useRef(nav);
   navRef.current = nav;
+
+  const compactRef = useRef(compact);
+  compactRef.current = compact;
 
   // --- keyboard ---
   useEffect(() => {
@@ -103,7 +109,7 @@ export function useGalaxyControls({
     (index: number) => {
       const cur = navRef.current;
       if (cur.landed) return;
-      if (cur.preset === 'TOP-DOWN') dispatch({type: 'selectAndLand', index});
+      if (compactRef.current || cur.preset === 'TOP-DOWN') dispatch({type: 'selectAndLand', index});
       else if (index === cur.current) dispatch({type: 'land'});
       else dispatch({type: 'goTo', index, n: N});
     },

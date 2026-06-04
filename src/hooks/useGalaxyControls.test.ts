@@ -107,4 +107,13 @@ describe('useGalaxyControls — onSelect (click-to-fly) handler', () => {
     act(() => result.current.onSelect(1));
     expect(dispatch).not.toHaveBeenCalled();
   });
+
+  it('compact: selecting any planet → selectAndLand', () => {
+    const nav = {...initialNav(), current: 1};
+    const {result} = renderHook(() =>
+      useGalaxyControls({nav, dispatch, motion, compact: true}),
+    );
+    act(() => result.current.onSelect(4));
+    expect(dispatch).toHaveBeenCalledWith({type: 'selectAndLand', index: 4});
+  });
 });
