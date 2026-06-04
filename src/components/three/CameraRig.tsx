@@ -24,6 +24,8 @@ const STAR_RADIUS = 26;
 const PLANET_PAD = 6;
 // Same, but for the ship's flight path (matches Ship's keep-out margin).
 const SHIP_PLANET_PAD = 4;
+// World up axis for the mobile free-look yaw rotation (module scratch, never mutated).
+const WORLD_UP = new THREE.Vector3(0, 1, 0);
 
 type PositionsRef = {current: [number, number, number][]};
 
@@ -105,6 +107,13 @@ export function CameraRig({
       else if (prev.landed && !nav.landed) motion.moveBase = 0.75;
       else motion.moveBase = 0.4;
 
+      // Mobile: re-center the free-look on landing/take-off so the landed view
+      // isn't left rotated off the planet by a prior browse-pan.
+      if (compact && prev.landed !== nav.landed) {
+        motion.yaw = 0;
+        motion.pitch = 0;
+      }
+
       // Compute the CAMERA flight control point ONCE per trip (snapshot of the
       // target + obstacles at this instant), so moving planets don't cause wobble.
       const Ps = positionsRef.current[nav.current];
@@ -165,19 +174,30 @@ export function CameraRig({
     // the control == midpoint, so this is a straight line; it swerves sideways
     // only enough to clear the star or a planet that lies on the way.
     bezierPoint(motion.fromCam, motion.camControl, targetPos.current, e, camera.position);
-    // radial / tangent at the planet for the free-look pan
-    radv.current.set(P[0], 0, P[2]);
-    if (radv.current.lengthSq() < 1e-4) radv.current.set(1, 0, 0);
-    radv.current.normalize();
-    tang.current.set(-radv.current.z, 0, radv.current.x);
-    const drag = nav.landed ? 0.35 : 1;
-    camera.position
-      .addScaledVector(tang.current, motion.yaw * 8 * drag);
-    camera.position.y += motion.pitch * 10 * drag;
 
     // --- look target lerp ---
     motion.lastLook.copy(motion.fromLook).lerp(targetLook.current, e);
-    camera.lookAt(motion.lastLook);
+
+    if (compact) {
+      // Mobile free-look: aim at the planet, then ROTATE the view so the user can
+      // sweep across the galaxy to find a planet to tap. Only while browsing — the
+      // landed view stays centered (yaw/pitch were reset on landing).
+      camera.lookAt(motion.lastLook);
+      if (!nav.landed) {
+        camera.rotateOnWorldAxis(WORLD_UP, motion.yaw); // yaw around world up
+        camera.rotateX(-motion.pitch);                  // pitch around local right
+      }
+    } else {
+      // Desktop free-look: strafe the camera while staying locked on the planet.
+      radv.current.set(P[0], 0, P[2]);
+      if (radv.current.lengthSq() < 1e-4) radv.current.set(1, 0, 0);
+      radv.current.normalize();
+      tang.current.set(-radv.current.z, 0, radv.current.x);
+      const drag = nav.landed ? 0.35 : 1;
+      camera.position.addScaledVector(tang.current, motion.yaw * 8 * drag);
+      camera.position.y += motion.pitch * 10 * drag;
+      camera.lookAt(motion.lastLook);
+    }
   });
 
   return null;

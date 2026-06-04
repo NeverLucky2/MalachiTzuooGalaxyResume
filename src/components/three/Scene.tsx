@@ -6,7 +6,6 @@ import {PLANETS} from '@/data/planets';
 import {createMotionState} from '@/lib/motion';
 import {useGalaxyControls} from '@/hooks/useGalaxyControls';
 import {useIsCompact} from '@/hooks/useIsCompact';
-import {useTouchGestures} from '@/hooks/useTouchGestures';
 import {MobileHud} from '@/components/hud/MobileHud';
 import {Starfield} from './Starfield';
 import {Sun} from './Sun';
@@ -47,7 +46,7 @@ export function Scene({
     return () => document.removeEventListener('visibilitychange', sync);
   }, []);
 
-  // Keyboard / pointer-drag / click-to-fly controls.
+  // Keyboard / pointer-drag (free-look) / click-to-fly controls.
   const isCompact = useIsCompact();
   const {boost, onSelect, onPointerDown} = useGalaxyControls({
     nav,
@@ -55,7 +54,6 @@ export function Scene({
     motion: motion.current,
     compact: isCompact,
   });
-  const gestures = useTouchGestures({nav, dispatch, enabled: isCompact});
 
   return (
     <>
@@ -67,10 +65,7 @@ export function Scene({
           dpr={[1, 2]}
           frameloop={frameloop}
           gl={{antialias: true}}
-          onPointerDown={(e) => {
-            onPointerDown(e);
-            gestures.onPointerDown(e);
-          }}
+          onPointerDown={(e) => onPointerDown(e)}
         >
           <ambientLight color={0x6a7fb0} intensity={1.45} />
           <pointLight color={0xfff0d0} intensity={1.9} distance={0} decay={0.015} />

@@ -121,7 +121,7 @@ export function MobileMenu({
                 </a>
               )}
             </div>
-            <div className="text-center text-[10px] text-[#6f93a9]">drag to look · swipe to travel</div>
+            <div className="text-center text-[10px] text-[#6f93a9]">drag to look around · tap a planet to explore</div>
           </div>
         </div>
       )}

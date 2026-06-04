@@ -83,7 +83,10 @@ export function useGalaxyControls({
       if (!drag.current.active) return;
       motion.yaw += (e.clientX - drag.current.px) * 0.005;
       motion.pitch += (e.clientY - drag.current.py) * 0.003;
-      motion.pitch = Math.max(-0.5, Math.min(0.5, motion.pitch));
+      // Mobile drag rotates the view (CameraRig free-look), so allow a wider
+      // vertical range than the desktop strafe to survey the scene.
+      const pitchLimit = compactRef.current ? 1.2 : 0.5;
+      motion.pitch = Math.max(-pitchLimit, Math.min(pitchLimit, motion.pitch));
       drag.current.px = e.clientX;
       drag.current.py = e.clientY;
     };
