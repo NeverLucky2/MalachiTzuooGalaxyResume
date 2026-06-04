@@ -5,7 +5,7 @@ import * as THREE from 'three';
 import {createWorld, PLAY} from '@/lib/minigame/world';
 import {stepWorld} from '@/lib/minigame/engine';
 import {DIFFICULTY, type Difficulty} from '@/lib/minigame/difficulty';
-import {scoreFromDistance, saveBest} from '@/lib/minigame/score';
+import {scoreFromDistance} from '@/lib/minigame/score';
 import {makeRng} from '@/lib/minigame/rng';
 
 const _m = new THREE.Matrix4();
@@ -33,7 +33,7 @@ export function useGameEngine({
   pointerRef: RefObject<{x: number; y: number} | null>;
   shipRef: RefObject<THREE.Group | null>;
   asteroidsRef: RefObject<THREE.InstancedMesh | null>;
-  onGameOver: (score: number, best: number) => void;
+  onGameOver: (score: number) => void;
 }) {
   const world = useRef(createWorld());
   const rng = useRef(makeRng((Date.now() & 0xffff) || 1));
@@ -42,6 +42,7 @@ export function useGameEngine({
   // Fresh world whenever a new run starts (difficulty changes / remount).
   useEffect(() => {
     world.current = createWorld();
+    rng.current = makeRng((Date.now() & 0xffff) || 1);
     ended.current = false;
   }, [difficulty]);
 
@@ -80,8 +81,7 @@ export function useGameEngine({
 
     if (!w.alive && !ended.current) {
       ended.current = true;
-      const score = scoreFromDistance(w.distance);
-      onGameOver(score, saveBest(score));
+      onGameOver(scoreFromDistance(w.distance));
     }
   });
 }

@@ -20,7 +20,7 @@ export function GameScene({
 }: {
   difficulty: Difficulty;
   pointerRef: RefObject<{x: number; y: number} | null>;
-  onGameOver: (score: number, best: number) => void;
+  onGameOver: (score: number) => void;
 }) {
   const shipRef = useRef<THREE.Group>(null);
   const asteroidsRef = useRef<THREE.InstancedMesh>(null);
