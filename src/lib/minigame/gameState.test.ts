@@ -33,3 +33,19 @@ describe('gameReducer', () => {
     expect(gameReducer(over, {type: 'menu'}).phase).toBe('menu');
   });
 });
+
+describe('gameState — justUnlocked', () => {
+  it('gameOver carries justUnlocked through; start/retry/menu reset it', () => {
+    const playing = gameReducer(initialGameState(0), {type: 'start', difficulty: 'easy'});
+    const over = gameReducer(playing, {type: 'gameOver', score: 1200, best: 1200, justUnlocked: true});
+    expect(over.justUnlocked).toBe(true);
+    expect(gameReducer(over, {type: 'retry'}).justUnlocked).toBe(false);
+    expect(gameReducer(over, {type: 'menu'}).justUnlocked).toBe(false);
+    expect(gameReducer(over, {type: 'start', difficulty: 'hard'}).justUnlocked).toBe(false);
+  });
+
+  it('gameOver without justUnlocked defaults to false', () => {
+    const over = gameReducer(initialGameState(0), {type: 'gameOver', score: 300, best: 300});
+    expect(over.justUnlocked).toBe(false);
+  });
+});
