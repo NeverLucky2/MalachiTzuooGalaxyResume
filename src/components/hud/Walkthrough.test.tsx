@@ -10,6 +10,7 @@ describe('Walkthrough', () => {
     render(<Walkthrough compact onClose={vi.fn()} />);
     expect(screen.getByText(/land on a planet/i)).toBeInTheDocument();
     expect(screen.getByText(/step 1 of 5/i)).toBeInTheDocument();
+    expect(screen.queryByRole('button', {name: /back/i})).not.toBeInTheDocument();
     fireEvent.click(screen.getByRole('button', {name: /next/i}));
     expect(screen.getByText(/fly between planets/i)).toBeInTheDocument();
   });
@@ -25,6 +26,14 @@ describe('Walkthrough', () => {
     const onClose = vi.fn();
     render(<Walkthrough compact onClose={onClose} />);
     fireEvent.click(screen.getByRole('button', {name: /skip/i}));
+    expect(onClose).toHaveBeenCalledTimes(1);
+    expect(isTourDone()).toBe(true);
+  });
+
+  it('Escape closes and persists tour-done', () => {
+    const onClose = vi.fn();
+    render(<Walkthrough compact onClose={onClose} />);
+    fireEvent.keyDown(screen.getByRole('dialog'), {key: 'Escape'});
     expect(onClose).toHaveBeenCalledTimes(1);
     expect(isTourDone()).toBe(true);
   });

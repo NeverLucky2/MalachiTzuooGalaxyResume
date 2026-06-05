@@ -1,5 +1,5 @@
 'use client';
-import {useEffect, useState} from 'react';
+import {useEffect, useRef, useState} from 'react';
 import {tourSteps} from '@/lib/walkthrough';
 import {setTourDone} from '@/lib/prefs';
 
@@ -13,6 +13,11 @@ export function Walkthrough({compact, onClose}: {compact: boolean; onClose: () =
   const [i, setI] = useState(0);
   const step = steps[i];
   const last = i === steps.length - 1;
+  const dialogRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    dialogRef.current?.focus();
+  }, []);
 
   // Measure the current target's box so the ring lines up; re-measure on resize.
   const [rect, setRect] = useState<DOMRect | null>(null);
@@ -57,15 +62,18 @@ export function Walkthrough({compact, onClose}: {compact: boolean; onClose: () =
       )}
 
       <div
+        ref={dialogRef}
         role="dialog"
         aria-modal="true"
-        aria-label="Walkthrough"
-        className="fixed left-1/2 top-1/2 w-[min(360px,88vw)] -translate-x-1/2 -translate-y-1/2 rounded-2xl border border-[#21e6ff]/55 bg-[#08081a]/95 p-5 text-[#e7f6ff] shadow-[0_0_40px_rgba(33,230,255,.35)] backdrop-blur-md"
+        aria-labelledby="walkthrough-title"
+        tabIndex={-1}
+        onKeyDown={(e) => { if (e.key === 'Escape') finish(); }}
+        className="fixed left-1/2 top-1/2 w-[min(360px,88vw)] -translate-x-1/2 -translate-y-1/2 rounded-2xl border border-[#21e6ff]/55 bg-[#08081a]/95 p-5 text-[#e7f6ff] shadow-[0_0_40px_rgba(33,230,255,.35)] backdrop-blur-md focus:outline-none"
       >
         <div className="font-display text-[10px] uppercase tracking-[2px] text-[#7fb0c9]">
           Step {i + 1} of {steps.length}
         </div>
-        <h3 className="mt-1 font-display text-lg font-bold">{step.title}</h3>
+        <h3 id="walkthrough-title" className="mt-1 font-display text-lg font-bold">{step.title}</h3>
         <p className="mt-2 text-sm text-[#cfe6f5]">{step.body}</p>
 
         <div className="mt-4 flex items-center justify-between">
