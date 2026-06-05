@@ -14,10 +14,11 @@ interface Mats {
 }
 
 /**
- * Premium "Interceptor" ship — a sleek dart with a white hull and a gold outline:
- * tapered white hull (sharp +Z nose), a gold nose tip + collar, swept delta wings
- * banded cyan (inner) → black (mid) → gold (outer edges), a cyan dorsal spine +
- * cockpit, twin magenta engines, and a magenta exhaust halo. Drop-in for ShipModel:
+ * Premium "Interceptor" ship — a sleek, faceted dart with a white hull and a gold
+ * outline: tapered white hull (sharp +Z nose, low-segment F-117 facets), a gold
+ * nose tip + collar, blended swept wings (rooted into the hull) banded cyan (at the
+ * hull) → black (mid) → gold (outer edges), a cyan dorsal spine + cockpit, twin
+ * magenta engines, and a magenta exhaust halo. Drop-in for ShipModel:
  * forward = +Z, centered, comparable size, so the galaxy Ship + minigame PlayerShip
  * use it unchanged.
  */
@@ -56,9 +57,10 @@ export function InterceptorShip() {
 
   return (
     <group>
-      {/* Tapered white hull: narrow nose toward +Z, wider tail toward -Z. */}
+      {/* Tapered white hull: narrow nose toward +Z, wider tail toward -Z. Low
+          segment count gives the faceted F-117-style fuselage. */}
       <mesh material={mats.hull} rotation={[Math.PI / 2, 0, 0]}>
-        <cylinderGeometry args={[0.07, 0.3, 1.9, 16]} />
+        <cylinderGeometry args={[0.08, 0.32, 1.9, 8]} />
       </mesh>
       {/* Sharp gold nose tip (+Z). */}
       <mesh ref={tipRef} material={mats.gold} position={[0, 0, 1.02]} rotation={[Math.PI / 2, 0, 0]}>
@@ -94,29 +96,30 @@ export function InterceptorShip() {
 }
 
 function Wing({side, mats}: {side: number; mats: Pick<Mats, 'wing' | 'cyan' | 'gold'>}) {
-  // Swept-back delta wing, banded inner→outer: cyan band (by the body) → black mid
-  // panel → gold edges (leading, trailing, outer) forming the gold outline.
+  // Sharply-swept wing whose root is buried INSIDE the fuselage — a blended
+  // mid-wing (F-117 style) so there's no gap at the top; the wing emerges from the
+  // hull side. Banded cyan (at the hull exit) → black mid → gold edges.
   return (
-    <group position={[side * 0.22, -0.03, -0.18]} rotation={[0, side * 0.62, side * 0.1]}>
-      {/* Black mid panel. */}
-      <mesh material={mats.wing} position={[side * 0.46, 0, 0]}>
-        <boxGeometry args={[0.86, 0.035, 0.7]} />
+    <group position={[side * 0.02, -0.04, -0.18]} rotation={[0, side * 0.66, side * 0.02]}>
+      {/* Black mid panel — inner edge sits inside the hull, tip swept out + back. */}
+      <mesh material={mats.wing} position={[side * 0.52, 0, 0]}>
+        <boxGeometry args={[1.04, 0.04, 0.74]} />
       </mesh>
-      {/* Cyan inner band, nearest the body. */}
-      <mesh material={mats.cyan} position={[side * 0.16, 0.022, 0]}>
-        <boxGeometry args={[0.26, 0.02, 0.64]} />
+      {/* Cyan band where the wing exits the hull. */}
+      <mesh material={mats.cyan} position={[side * 0.26, 0.026, 0]}>
+        <boxGeometry args={[0.16, 0.02, 0.66]} />
       </mesh>
       {/* Gold leading edge. */}
-      <mesh material={mats.gold} position={[side * 0.46, 0.012, 0.34]}>
-        <boxGeometry args={[0.92, 0.05, 0.06]} />
+      <mesh material={mats.gold} position={[side * 0.54, 0.015, 0.37]}>
+        <boxGeometry args={[1.04, 0.05, 0.06]} />
       </mesh>
       {/* Gold trailing edge. */}
-      <mesh material={mats.gold} position={[side * 0.46, 0.012, -0.34]}>
-        <boxGeometry args={[0.92, 0.05, 0.06]} />
+      <mesh material={mats.gold} position={[side * 0.54, 0.015, -0.37]}>
+        <boxGeometry args={[1.04, 0.05, 0.06]} />
       </mesh>
       {/* Gold outer wingtip edge. */}
-      <mesh material={mats.gold} position={[side * 0.9, 0, 0]}>
-        <boxGeometry args={[0.06, 0.06, 0.74]} />
+      <mesh material={mats.gold} position={[side * 1.04, 0, 0]}>
+        <boxGeometry args={[0.06, 0.06, 0.78]} />
       </mesh>
     </group>
   );
