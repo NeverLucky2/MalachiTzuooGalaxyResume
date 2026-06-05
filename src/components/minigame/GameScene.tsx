@@ -4,6 +4,7 @@ import type * as THREE from 'three';
 import {Starfield} from '@/components/three/Starfield';
 import {PLAY} from '@/lib/minigame/world';
 import type {Difficulty} from '@/lib/minigame/difficulty';
+import type {ShipVariantId} from '@/lib/ships';
 import {PlayerShip} from './PlayerShip';
 import {Asteroids} from './Asteroids';
 import {useGameEngine} from './useGameEngine';
@@ -18,11 +19,13 @@ export function GameScene({
   pointerRef,
   scoreRef,
   onGameOver,
+  variant = 'default',
 }: {
   difficulty: Difficulty;
   pointerRef: RefObject<{x: number; y: number} | null>;
   scoreRef: RefObject<number>;
   onGameOver: (score: number) => void;
+  variant?: ShipVariantId;
 }) {
   const shipRef = useRef<THREE.Group>(null);
   const asteroidsRef = useRef<THREE.InstancedMesh>(null);
@@ -34,7 +37,7 @@ export function GameScene({
       <ambientLight color={0x6a7fb0} intensity={1.2} />
       <directionalLight position={[6, 8, 4]} intensity={1.6} color={0xfff0d0} />
       <Starfield />
-      <PlayerShip groupRef={shipRef} />
+      <PlayerShip groupRef={shipRef} variant={variant} />
       <Asteroids meshRef={asteroidsRef} count={PLAY.poolSize} />
     </>
   );

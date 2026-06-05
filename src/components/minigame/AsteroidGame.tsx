@@ -4,6 +4,8 @@ import {Canvas} from '@react-three/fiber';
 import {gameReducer, initialGameState} from '@/lib/minigame/gameState';
 import {loadBest, saveBest} from '@/lib/minigame/score';
 import type {Difficulty} from '@/lib/minigame/difficulty';
+import type {ShipVariantId} from '@/lib/ships';
+import {INTERCEPTOR_UNLOCK, isInterceptorUnlocked} from '@/lib/ships';
 import {GameScene} from './GameScene';
 import {GameHud} from './GameHud';
 import {LiveScore} from './LiveScore';
@@ -14,7 +16,15 @@ import {LiveScore} from './LiveScore';
  * renders its own R3F Canvas (angled 3/4 camera) plus the DOM HUD. `onExit`
  * returns to the galaxy.
  */
-export function AsteroidGame({onExit}: {onExit: () => void}) {
+export function AsteroidGame({
+  onExit,
+  equippedShip = 'default',
+  onUnlockInterceptor = () => {},
+}: {
+  onExit: () => void;
+  equippedShip?: ShipVariantId;
+  onUnlockInterceptor?: () => void;
+}) {
   const [state, dispatch] = useReducer(gameReducer, undefined, () => initialGameState(loadBest()));
   const pointerRef = useRef<{x: number; y: number}>({x: 0, y: 0});
   const scoreRef = useRef(0);
@@ -39,9 +49,18 @@ export function AsteroidGame({onExit}: {onExit: () => void}) {
   }, []);
 
   const onStart = (d: Difficulty) => dispatch({type: 'start', difficulty: d});
-  const onGameOver = useCallback((score: number) => {
-    dispatch({type: 'gameOver', score, best: saveBest(score)});
-  }, []);
+  const onGameOver = useCallback(
+    (score: number) => {
+      const prevBest = loadBest();
+      const best = saveBest(score);
+      const justUnlocked = prevBest < INTERCEPTOR_UNLOCK && best >= INTERCEPTOR_UNLOCK;
+      if (justUnlocked) onUnlockInterceptor();
+      dispatch({type: 'gameOver', score, best, justUnlocked});
+    },
+    [onUnlockInterceptor],
+  );
+
+  const interceptorUnlocked = isInterceptorUnlocked(loadBest());
 
   return (
     <div
@@ -52,7 +71,7 @@ export function AsteroidGame({onExit}: {onExit: () => void}) {
     >
       <Canvas camera={{position: [6.5, 4.5, 14], fov: 60, near: 0.1, far: 400}} dpr={[1, 2]} gl={{antialias: true}}>
         {state.phase === 'playing' && (
-          <GameScene difficulty={state.difficulty} pointerRef={pointerRef} scoreRef={scoreRef} onGameOver={onGameOver} />
+          <GameScene difficulty={state.difficulty} pointerRef={pointerRef} scoreRef={scoreRef} onGameOver={onGameOver} variant={equippedShip} />
         )}
       </Canvas>
 
@@ -62,6 +81,7 @@ export function AsteroidGame({onExit}: {onExit: () => void}) {
         onRetry={() => dispatch({type: 'retry'})}
         onMenu={() => dispatch({type: 'menu'})}
         onExit={onExit}
+        interceptorUnlocked={interceptorUnlocked}
       />
       {state.phase === 'playing' && <LiveScore scoreRef={scoreRef} />}
     </div>
