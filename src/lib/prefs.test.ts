@@ -3,6 +3,7 @@ import {
   isTourDone, setTourDone,
   isShipMinigameEnabled, setShipMinigameEnabled,
   isTakeoffTipSeen, setTakeoffTipSeen,
+  getEquippedShip, setEquippedShip,
 } from './prefs';
 
 describe('prefs', () => {
@@ -30,5 +31,21 @@ describe('prefs', () => {
     expect(isTakeoffTipSeen()).toBe(true);
     setTakeoffTipSeen(false);
     expect(isTakeoffTipSeen()).toBe(false);
+  });
+});
+
+describe('prefs — equipped ship', () => {
+  beforeEach(() => localStorage.clear());
+
+  it('defaults to "default" and round-trips a valid id', () => {
+    expect(getEquippedShip()).toBe('default');
+    setEquippedShip('interceptor');
+    expect(getEquippedShip()).toBe('interceptor');
+    expect(localStorage.getItem('galaxy.ship.model')).toBe('interceptor');
+  });
+
+  it('falls back to "default" for an unknown stored value', () => {
+    localStorage.setItem('galaxy.ship.model', 'bogus');
+    expect(getEquippedShip()).toBe('default');
   });
 });

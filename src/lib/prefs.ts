@@ -4,6 +4,8 @@
  * Stored as '1'/'0'; an ABSENT key falls back to the provided default — that's how
  * the ship mini-game stays ON until a user explicitly turns it off.
  */
+import {SHIP_VARIANTS, type ShipVariantId} from './ships';
+
 function readBool(key: string, dflt: boolean): boolean {
   if (typeof window === 'undefined') return dflt;
   try {
@@ -34,4 +36,25 @@ export const setShipMinigameEnabled = (on: boolean) => writeBool(SHIP_MINIGAME_K
 
 export const isTakeoffTipSeen = () => readBool(TAKEOFF_TIP_KEY, false);
 export const setTakeoffTipSeen = (seen: boolean) => writeBool(TAKEOFF_TIP_KEY, seen);
+
+export const SHIP_MODEL_KEY = 'galaxy.ship.model';
+
+/** The equipped ship variant id; 'default' when absent/unknown/unreadable. */
+export function getEquippedShip(): ShipVariantId {
+  if (typeof window === 'undefined') return 'default';
+  try {
+    const v = localStorage.getItem(SHIP_MODEL_KEY);
+    return SHIP_VARIANTS.some((s) => s.id === v) ? (v as ShipVariantId) : 'default';
+  } catch {
+    return 'default';
+  }
+}
+
+export function setEquippedShip(id: ShipVariantId): void {
+  try {
+    localStorage.setItem(SHIP_MODEL_KEY, id);
+  } catch {
+    /* storage unavailable — ignore */
+  }
+}
 
