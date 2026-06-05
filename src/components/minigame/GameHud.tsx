@@ -29,7 +29,7 @@ export function GameHud({
         type="button"
         onClick={onExit}
         aria-label="Exit game"
-        className="pointer-events-auto absolute left-[calc(12px+env(safe-area-inset-left))] top-[calc(12px+env(safe-area-inset-top))] rounded-full border border-[#21e6ff]/50 bg-[#0a0a1f]/70 px-3 py-2 font-display text-xs text-cyan-200 backdrop-blur-md focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-cyan-300"
+        className="pointer-events-auto absolute z-20 left-[calc(12px+env(safe-area-inset-left))] top-[calc(12px+env(safe-area-inset-top))] rounded-full border border-[#21e6ff]/50 bg-[#0a0a1f]/70 px-3 py-2 font-display text-xs text-cyan-200 backdrop-blur-md focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-cyan-300"
       >
         ✕ Exit
       </button>

@@ -29,11 +29,19 @@ export function makeWave(rng: () => number, gapDiameter: number, cfg: WaveConfig
   const gapX = (rng() * 2 - 1) * Math.max(0, cfg.halfW - gapR);
   const gapY = (rng() * 2 - 1) * Math.max(0, cfg.halfH - gapR);
 
+  // Even grid INCLUDING both endpoints (±halfW, ±halfH) so the wall reaches the
+  // full ship-reachable area — corners included — leaving no permanent blind spot.
+  const cols = Math.max(1, Math.ceil((2 * cfg.halfW) / cfg.spacing));
+  const rows = Math.max(1, Math.ceil((2 * cfg.halfH) / cfg.spacing));
+  const jit = cfg.spacing * 0.25;
+
   const asteroids: WaveAsteroid[] = [];
-  for (let gx = -cfg.halfW; gx <= cfg.halfW + 1e-9; gx += cfg.spacing) {
-    for (let gy = -cfg.halfH; gy <= cfg.halfH + 1e-9; gy += cfg.spacing) {
-      const x = gx + (rng() * 2 - 1) * cfg.spacing * 0.25;
-      const y = gy + (rng() * 2 - 1) * cfg.spacing * 0.25;
+  for (let i = 0; i <= cols; i++) {
+    const gx = -cfg.halfW + (2 * cfg.halfW) * (i / cols);
+    for (let j = 0; j <= rows; j++) {
+      const gy = -cfg.halfH + (2 * cfg.halfH) * (j / rows);
+      const x = gx + (rng() * 2 - 1) * jit;
+      const y = gy + (rng() * 2 - 1) * jit;
       const r = cfg.rMin + rng() * (cfg.rMax - cfg.rMin);
       // Keep this asteroid only if its whole body sits outside the gap.
       if (Math.hypot(x - gapX, y - gapY) - r >= gapR) {

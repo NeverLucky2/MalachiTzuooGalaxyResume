@@ -6,9 +6,8 @@ export const PLAY = {
   spawnZ: -120,   // asteroids spawn at this z
   despawnZ: 14,   // recycled once past this z (behind the camera)
   shipR: 0.55,    // ship collision radius
-  poolSize: 48,   // asteroid pool capacity (hard cap)
+  poolSize: 120,  // asteroid pool capacity (hard cap; large enough that full walls — incl. corners — never overflow/drop)
   shipEase: 6,    // ship target-follow rate (per second)
-  spacing: 2.6,   // spawn grid spacing
   rMin: 0.7,
   rMax: 1.7,
 } as const;

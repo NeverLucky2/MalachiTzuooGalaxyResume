@@ -26,4 +26,8 @@ describe('difficulty', () => {
     expect(spawnIntervalAt(p, 10)).toBeLessThan(spawnIntervalAt(p, 0));
     expect(spawnIntervalAt(p, 100000)).toBeGreaterThanOrEqual(p.minSpawnInterval);
   });
+
+  it('easy walls are sparser than hard (fewer asteroids)', () => {
+    expect(DIFFICULTY.easy.spacing).toBeGreaterThan(DIFFICULTY.hard.spacing);
+  });
 });

@@ -19,6 +19,18 @@ describe('makeWave', () => {
     expect(wave.asteroids.length).toBeGreaterThan(5);
   });
 
+  it('covers out to the play bounds — no safe corner', () => {
+    // The old grid topped out around x~6.6 / y~4.4; the wall must now reach the
+    // full ±halfW / ±halfH the ship can fly to, so the corners can't be blind.
+    const wave = makeWave(makeRng(11), 5, cfg);
+    const xs = wave.asteroids.map((a) => a.x);
+    const ys = wave.asteroids.map((a) => a.y);
+    expect(Math.max(...xs)).toBeGreaterThan(7.5);
+    expect(Math.min(...xs)).toBeLessThan(-7.5);
+    expect(Math.max(...ys)).toBeGreaterThan(5);
+    expect(Math.min(...ys)).toBeLessThan(-5);
+  });
+
   it('keeps the gap center inside the play bounds', () => {
     for (let seed = 0; seed < 20; seed++) {
       const wave = makeWave(makeRng(seed), 6, cfg);

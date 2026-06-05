@@ -18,7 +18,7 @@ export function spawnWave(world: World, diff: DiffParams, rng: () => number): vo
   const wave = makeWave(rng, gapWidthAt(diff, world.elapsed), {
     halfW: PLAY.halfW,
     halfH: PLAY.halfH,
-    spacing: PLAY.spacing,
+    spacing: diff.spacing,
     rMin: PLAY.rMin,
     rMax: PLAY.rMax,
   });

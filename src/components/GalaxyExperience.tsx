@@ -5,10 +5,22 @@ import {detectCaps, shouldUse3D} from '@/lib/capabilities';
 import {initialNav, navReducer} from '@/lib/navigation';
 import {RESUME_HEADING_ID} from '@/components/fallback/FallbackResume';
 import {AsteroidGame} from '@/components/minigame/AsteroidGame';
+import {MinigameHint} from '@/components/hud/MinigameHint';
 
 const Scene = dynamic(() => import('@/components/three/Scene').then(m => m.Scene), {ssr: false});
 
 type Mode = 'galaxy' | 'resume';
+
+/** localStorage flag: set once the player has opened the easter-egg minigame. */
+const DISCOVERED_KEY = 'galaxy.minigame.discovered';
+function readDiscovered(): boolean {
+  if (typeof window === 'undefined') return false;
+  try {
+    return localStorage.getItem(DISCOVERED_KEY) === '1';
+  } catch {
+    return false;
+  }
+}
 
 /**
  * Top-level switch between the two views: the 3D `galaxy` scene and the clean 2D
@@ -28,6 +40,10 @@ export function GalaxyExperience() {
   });
   const [nav, dispatch] = useReducer(navReducer, undefined, initialNav);
   const [minigameOpen, setMinigameOpen] = useState(false);
+  // Whether the player has ever opened the minigame (persisted), and whether the
+  // discovery hint was dismissed this session. Both suppress the hint.
+  const [discovered, setDiscovered] = useState(readDiscovered);
+  const [hintDismissed, setHintDismissed] = useState(false);
 
   // Decide the initial view once on the client, where we can detect caps.
   useEffect(() => {
@@ -51,6 +67,17 @@ export function GalaxyExperience() {
     });
   };
 
+  // Opening the minigame also marks it discovered, so the hint never shows again.
+  const openMinigame = () => {
+    setMinigameOpen(true);
+    setDiscovered(true);
+    try {
+      localStorage.setItem(DISCOVERED_KEY, '1');
+    } catch {
+      /* ignore */
+    }
+  };
+
   if (mode === 'galaxy') {
     return (
       <>
@@ -60,8 +87,11 @@ export function GalaxyExperience() {
           onSkip={showResume}
           reducedMotion={caps.reducedMotion}
           paused={minigameOpen}
-          onLaunchMinigame={() => setMinigameOpen(true)}
+          onLaunchMinigame={openMinigame}
         />
+        {!minigameOpen && !discovered && !hintDismissed && (
+          <MinigameHint onDismiss={() => setHintDismissed(true)} />
+        )}
         {minigameOpen && <AsteroidGame onExit={() => setMinigameOpen(false)} />}
       </>
     );

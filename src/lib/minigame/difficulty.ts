@@ -10,12 +10,14 @@ export interface DiffParams {
   baseSpawnInterval: number; // seconds between waves
   minSpawnInterval: number;
   spawnRamp: number; // interval shrink per elapsed second
+  spacing: number; // asteroid-wall grid spacing — larger = sparser walls = fewer asteroids
 }
 
+// Easy: slow + sparse. Normal: today's hard SPEED but slightly sparser. Hard: faster + dense.
 export const DIFFICULTY: Record<Difficulty, DiffParams> = {
-  easy:   {baseSpeed: 24, speedRamp: 0.45, maxSpeed: 55, baseGap: 7.0, minGap: 4.2, gapRamp: 0.05, baseSpawnInterval: 1.5,  minSpawnInterval: 0.85, spawnRamp: 0.012},
-  normal: {baseSpeed: 30, speedRamp: 0.60, maxSpeed: 72, baseGap: 6.0, minGap: 3.4, gapRamp: 0.06, baseSpawnInterval: 1.25, minSpawnInterval: 0.60, spawnRamp: 0.016},
-  hard:   {baseSpeed: 38, speedRamp: 0.80, maxSpeed: 95, baseGap: 5.2, minGap: 2.8, gapRamp: 0.07, baseSpawnInterval: 1.0,  minSpawnInterval: 0.45, spawnRamp: 0.020},
+  easy:   {baseSpeed: 24, speedRamp: 0.45, maxSpeed: 55,  baseGap: 8.0, minGap: 5.5, gapRamp: 0.05, baseSpawnInterval: 1.6, minSpawnInterval: 1.0,  spawnRamp: 0.012, spacing: 3.6},
+  normal: {baseSpeed: 38, speedRamp: 0.80, maxSpeed: 95,  baseGap: 6.5, minGap: 4.2, gapRamp: 0.06, baseSpawnInterval: 1.3, minSpawnInterval: 0.8,  spawnRamp: 0.016, spacing: 3.1},
+  hard:   {baseSpeed: 44, speedRamp: 0.95, maxSpeed: 112, baseGap: 5.4, minGap: 3.0, gapRamp: 0.07, baseSpawnInterval: 1.1, minSpawnInterval: 0.65, spawnRamp: 0.020, spacing: 2.6},
 };
 
 export function speedAt(p: DiffParams, elapsed: number): number {
