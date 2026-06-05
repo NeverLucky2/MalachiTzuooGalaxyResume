@@ -61,7 +61,6 @@ export function GalaxyExperience() {
   useEffect(() => {
     persistEquippedShip(equippedShip);
   }, [equippedShip]);
-  const equipInterceptor = () => setEquippedShip('interceptor');
   const interceptorUnlocked = isInterceptorUnlocked(loadBest());
 
   if (mode === 'galaxy') {
@@ -82,7 +81,7 @@ export function GalaxyExperience() {
           <AsteroidGame
             onExit={() => setMinigameOpen(false)}
             equippedShip={equippedShip}
-            onUnlockInterceptor={equipInterceptor}
+            onUnlockInterceptor={() => setEquippedShip('interceptor')}
           />
         )}
       </>

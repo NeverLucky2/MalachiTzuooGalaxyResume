@@ -41,6 +41,7 @@ export function SettingsControls({
         ↻ Replay walkthrough
       </button>
 
+      {/* Ship switcher — intentionally does NOT close the popover, so the player can toggle/compare. Shown only once unlocked. */}
       {interceptorUnlocked && (
         <div className="rounded-xl border border-[#21e6ff]/40 bg-[#0a0a1f]/60 px-3 py-2.5">
           <div className="mb-1.5 font-display text-[10px] uppercase tracking-[1.5px] text-[#7fb0c9]">Ship</div>

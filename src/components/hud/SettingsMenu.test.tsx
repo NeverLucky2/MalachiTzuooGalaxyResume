@@ -27,16 +27,18 @@ describe('SettingsMenu (desktop)', () => {
 });
 
 describe('SettingsControls — ship switcher', () => {
-  const base = {shipMinigameEnabled: true, onToggleShipMinigame: vi.fn(), onReplayTour: vi.fn()};
-
   it('hides the ship switcher until the interceptor is unlocked', () => {
+    const base = {shipMinigameEnabled: true, onToggleShipMinigame: vi.fn(), onReplayTour: vi.fn()};
     render(<SettingsControls {...base} interceptorUnlocked={false} equippedShip="default" onEquipShip={vi.fn()} />);
     expect(screen.queryByRole('button', {name: /interceptor/i})).toBeNull();
   });
 
   it('shows the switcher when unlocked and equips on click', () => {
+    const base = {shipMinigameEnabled: true, onToggleShipMinigame: vi.fn(), onReplayTour: vi.fn()};
     const onEquip = vi.fn();
     render(<SettingsControls {...base} interceptorUnlocked={true} equippedShip="default" onEquipShip={onEquip} />);
+    expect(screen.getByRole('button', {name: /standard/i})).toHaveAttribute('aria-pressed', 'true');
+    expect(screen.getByRole('button', {name: /interceptor/i})).toHaveAttribute('aria-pressed', 'false');
     fireEvent.click(screen.getByRole('button', {name: /interceptor/i}));
     expect(onEquip).toHaveBeenCalledWith('interceptor');
   });
