@@ -105,7 +105,7 @@ export function Hud({
           <span className="whitespace-nowrap font-display text-[9px] tracking-wide text-[#21e6ff] opacity-65 [text-shadow:0_0_6px_rgba(33,230,255,.5)]">
             CAMERA ANGLE · V
           </span>
-          <CtrlButton onClick={() => dispatch({type: 'cyclePreset'})}>
+          <CtrlButton dataTour="camera" onClick={() => dispatch({type: 'cyclePreset'})}>
             👁 {nav.preset}
           </CtrlButton>
         </span>

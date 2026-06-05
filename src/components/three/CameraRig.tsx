@@ -107,9 +107,10 @@ export function CameraRig({
       else if (prev.landed && !nav.landed) motion.moveBase = 0.75;
       else motion.moveBase = 0.4;
 
-      // Mobile: re-center the free-look on landing/take-off so the landed view
-      // isn't left rotated off the planet by a prior browse-pan.
-      if (compact && prev.landed !== nav.landed) {
+      // Re-center the free-look (drag) when the camera-angle preset changes — so the
+      // camera button snaps a spun-around view back to the new preset's clean default —
+      // and on mobile landing/take-off (so the landed view isn't left rotated off-planet).
+      if (prev.preset !== nav.preset || (compact && prev.landed !== nav.landed)) {
         motion.yaw = 0;
         motion.pitch = 0;
       }

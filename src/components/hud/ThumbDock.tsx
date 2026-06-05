@@ -18,6 +18,7 @@ export function ThumbDock({
       <div className="flex flex-col gap-2">
         <button
           type="button"
+          data-tour="camera"
           aria-label="Camera angle"
           onClick={() => dispatch({type: 'cyclePreset'})}
           className="pointer-events-auto flex items-center justify-center gap-1 truncate whitespace-nowrap rounded-xl border border-[#21e6ff]/50 bg-[#0a0a1f]/70 px-1 py-2 font-display text-[10px] text-[#9fe9ff] shadow-[0_0_10px_rgba(33,230,255,.25)] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-cyan-300"

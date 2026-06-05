@@ -6,7 +6,7 @@ import {initialNav} from '@/lib/navigation';
 describe('Hud — tour anchors', () => {
   it('tags land, fly, and menu controls for the walkthrough', () => {
     const {container} = render(<Hud nav={initialNav()} dispatch={vi.fn()} onSkip={vi.fn()} />);
-    for (const t of ['land', 'fly', 'menu'])
+    for (const t of ['land', 'fly', 'camera', 'menu'])
       expect(container.querySelector(`[data-tour="${t}"]`)).not.toBeNull();
   });
 });

@@ -22,6 +22,27 @@ describe('CameraRig', () => {
     expect(motion.lastLook.lengthSq()).toBeGreaterThan(0);
   });
 
+  it('re-centers the free-look drag when the camera preset changes', async () => {
+    const positionsRef = {current: PLANETS.map(() => [0, 0, 0] as [number, number, number])};
+    positionsRef.current[0] = [20, 0, 0];
+    const motion = createMotionState();
+    // Simulate a dragged-around view.
+    motion.yaw = 0.5;
+    motion.pitch = 0.3;
+    const r = await ReactThreeTestRenderer.create(
+      <CameraRig nav={initialNav()} positionsRef={positionsRef} motion={motion} />,
+    );
+    // First frame records the prevNav snapshot (no reset yet — prev was null).
+    await r.advanceFrames(1, 16);
+    // Tapping the camera button changes ONLY the preset → next frame zeros the drag.
+    await r.update(
+      <CameraRig nav={{...initialNav(), preset: 'TOP-DOWN'}} positionsRef={positionsRef} motion={motion} />,
+    );
+    await r.advanceFrames(1, 16);
+    expect(motion.yaw).toBe(0);
+    expect(motion.pitch).toBe(0);
+  });
+
   it('mounts with compact free-look (rotation path) without throwing', async () => {
     const positionsRef = {current: PLANETS.map(() => [0, 0, 0] as [number, number, number])};
     positionsRef.current[0] = [20, 0, 0];

@@ -9,7 +9,7 @@ describe('Walkthrough', () => {
   it('starts on step 1 and advances with Next', () => {
     render(<Walkthrough compact onClose={vi.fn()} />);
     expect(screen.getByText(/land on a planet/i)).toBeInTheDocument();
-    expect(screen.getByText(/step 1 of 5/i)).toBeInTheDocument();
+    expect(screen.getByText(/step 1 of 6/i)).toBeInTheDocument();
     expect(screen.queryByRole('button', {name: /back/i})).not.toBeInTheDocument();
     fireEvent.click(screen.getByRole('button', {name: /next/i}));
     expect(screen.getByText(/fly between planets/i)).toBeInTheDocument();
@@ -41,7 +41,7 @@ describe('Walkthrough', () => {
   it('Done on the last step persists tour-done and closes', () => {
     const onClose = vi.fn();
     render(<Walkthrough compact onClose={onClose} />);
-    for (let i = 0; i < 4; i++) fireEvent.click(screen.getByRole('button', {name: /next/i}));
+    for (let i = 0; i < 5; i++) fireEvent.click(screen.getByRole('button', {name: /next/i}));
     expect(screen.getByText(/hidden mini-game/i)).toBeInTheDocument();
     fireEvent.click(screen.getByRole('button', {name: /done/i}));
     expect(onClose).toHaveBeenCalledTimes(1);

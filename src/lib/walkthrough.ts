@@ -1,8 +1,8 @@
 /** A single walkthrough step. `target` is the `data-tour` value of the control to
  *  spotlight, or null for a centered card (the ship is a 3D object, not a DOM node). */
 export interface TourStep {
-  key: 'land' | 'fly' | 'menu' | 'name' | 'ship';
-  target: 'land' | 'fly' | 'menu' | 'name' | null;
+  key: 'land' | 'fly' | 'camera' | 'menu' | 'name' | 'ship';
+  target: 'land' | 'fly' | 'camera' | 'menu' | 'name' | null;
   title: string;
   body: string;
 }
@@ -25,6 +25,14 @@ export function tourSteps(compact: boolean): TourStep[] {
       body: compact
         ? 'Use ◀ and ▶ to fly to the other planets.'
         : 'Use ◀ and ▶ (or the arrow keys) to fly between planets.',
+    },
+    {
+      key: 'camera',
+      target: 'camera',
+      title: 'Switch camera angles',
+      body: compact
+        ? "Tap the camera button to switch viewing angles — and to re-center the view if you've spun it around."
+        : "Use the camera button (or press V) to switch viewing angles — and to re-center the view if you've spun it around.",
     },
     {
       key: 'menu',

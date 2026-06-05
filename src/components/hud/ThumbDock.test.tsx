@@ -37,9 +37,10 @@ describe('ThumbDock', () => {
 });
 
 describe('ThumbDock — tour anchors', () => {
-  it('tags the LAND and ▶ controls for the walkthrough', () => {
+  it('tags the LAND, ▶ and camera controls for the walkthrough', () => {
     const {container} = render(<ThumbDock nav={initialNav()} dispatch={vi.fn()} />);
     expect(container.querySelector('[data-tour="land"]')).not.toBeNull();
     expect(container.querySelector('[data-tour="fly"]')).not.toBeNull();
+    expect(container.querySelector('[data-tour="camera"]')).not.toBeNull();
   });
 });
