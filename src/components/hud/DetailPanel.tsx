@@ -55,7 +55,6 @@ export function DetailPanel({
       {nav.landed && (
         <button
           type="button"
-          data-tour="takeoff"
           onClick={() => {
             markTipSeen();
             onTakeOff();
