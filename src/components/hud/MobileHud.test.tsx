@@ -7,10 +7,12 @@ describe('MobileHud', () => {
   beforeEach(() => localStorage.clear());
 
   it('while flying: shows the identity chip, the ☰ menu and the dock', () => {
-    render(<MobileHud nav={initialNav()} dispatch={vi.fn()} onSkip={vi.fn()} />);
+    const {container} = render(<MobileHud nav={initialNav()} dispatch={vi.fn()} onSkip={vi.fn()} />);
     expect(screen.getByText(/malachi tzuoo/i)).toBeInTheDocument();
     expect(screen.getByRole('button', {name: /menu/i})).toBeInTheDocument();
     expect(screen.getByRole('button', {name: /land/i})).toBeInTheDocument();
+    expect(container.querySelector('[data-tour="name"]')).not.toBeNull();
+    expect(container.querySelector('[data-tour="menu"]')).not.toBeNull();
   });
 
   it('while landed: hides the identity chip/menu/dock and shows the detail panel TAKE OFF', () => {

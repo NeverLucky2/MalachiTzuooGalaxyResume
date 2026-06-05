@@ -41,6 +41,7 @@ export function MobileMenu({
         type="button"
         aria-label="Menu"
         aria-expanded={open}
+        data-tour="menu"
         onClick={() => setOpen(true)}
         className="pointer-events-auto fixed right-[calc(12px+env(safe-area-inset-right))] top-[calc(12px+env(safe-area-inset-top))] z-30 flex h-11 w-11 items-center justify-center rounded-full border border-[#21e6ff]/50 bg-[#0a0a1f]/70 text-xl text-[#9fe9ff] shadow-[0_0_14px_rgba(33,230,255,.3)] backdrop-blur-md focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-cyan-300"
       >

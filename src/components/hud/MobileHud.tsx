@@ -6,7 +6,7 @@ import {ThumbDock} from './ThumbDock';
 import {DetailPanel} from './DetailPanel';
 
 /**
- * Compact (touch) HUD. While flying: ☰ menu + thumb dock + coach hint. While
+ * Compact (touch) HUD. While flying: ☰ menu + thumb dock. While
  * landed: only the shared translucent DetailPanel (planet stays visible behind).
  */
 export function MobileHud({
