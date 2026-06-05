@@ -1,8 +1,9 @@
-import {describe, it, expect, vi} from 'vitest';
-import {render, screen, act} from '@testing-library/react';
+import {describe, it, expect, vi, beforeEach} from 'vitest';
+import {render, screen, act, fireEvent} from '@testing-library/react';
 import {DetailPanel} from './DetailPanel';
 import {initialNav} from '@/lib/navigation';
 import {PLANETS} from '@/data/planets';
+import {isTakeoffTipSeen} from '@/lib/prefs';
 
 describe('DetailPanel', () => {
   it('reveals content + header after the delay; TAKE OFF is immediate', () => {
@@ -77,5 +78,23 @@ describe('DetailPanel', () => {
     } finally {
       vi.useRealTimers();
     }
+  });
+});
+
+describe('DetailPanel — first-land tip', () => {
+  beforeEach(() => localStorage.clear());
+
+  it('shows the take-off tip on the first landing and persists once dismissed', () => {
+    render(<DetailPanel nav={{...initialNav(), landed: true}} onTakeOff={() => {}} />);
+    expect(screen.getByText(/head back to space/i)).toBeInTheDocument();
+    fireEvent.click(screen.getByRole('button', {name: /got it/i}));
+    expect(screen.queryByText(/head back to space/i)).toBeNull();
+    expect(isTakeoffTipSeen()).toBe(true);
+  });
+
+  it('does not show the tip once it has been seen', () => {
+    localStorage.setItem('galaxy.takeoff.tipSeen', '1');
+    render(<DetailPanel nav={{...initialNav(), landed: true}} onTakeOff={() => {}} />);
+    expect(screen.queryByText(/head back to space/i)).toBeNull();
   });
 });
