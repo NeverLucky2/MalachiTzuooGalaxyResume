@@ -34,7 +34,7 @@ export function InterceptorShip() {
       hull: new THREE.MeshStandardMaterial({color: 0xeef3fa, metalness: 0.55, roughness: 0.35, emissive: 0x10131a}),
       wing: new THREE.MeshStandardMaterial({color: 0x14121d, metalness: 0.8, roughness: 0.32, emissive: 0x05060a}),
       cyan: new THREE.MeshStandardMaterial({color: 0x21e6ff, emissive: 0x16c8e0, emissiveIntensity: 1.6, metalness: 0.4, roughness: 0.3}),
-      gold: new THREE.MeshStandardMaterial({color: 0xffce4a, emissive: 0x5a3d00, emissiveIntensity: 0.5, metalness: 0.95, roughness: 0.22}),
+      gold: new THREE.MeshStandardMaterial({color: 0xffce4a, emissive: 0xffc24a, emissiveIntensity: 1.8, metalness: 0.3, roughness: 0.35}),
       glass: new THREE.MeshStandardMaterial({color: 0x0a2030, emissive: 0x21a0c0, emissiveIntensity: 0.9, metalness: 0.3, roughness: 0.05}),
       engine: new THREE.MeshBasicMaterial({color: 0xff3df0}),
     }),
