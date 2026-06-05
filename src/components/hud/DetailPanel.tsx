@@ -59,7 +59,7 @@ export function DetailPanel({
             markTipSeen();
             onTakeOff();
           }}
-          className="pointer-events-auto absolute left-[calc(1rem+env(safe-area-inset-left))] top-[calc(1rem+env(safe-area-inset-top))] rounded-xl border border-[#ff3df0] bg-gradient-to-r from-[#ff3df0]/30 to-[#21e6ff]/30 px-[18px] py-3 font-display text-[13px] font-bold tracking-wide text-white shadow-[0_0_16px_#ff3df0] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-cyan-300"
+          className="pointer-events-auto absolute z-10 left-[calc(1rem+env(safe-area-inset-left))] top-[calc(1rem+env(safe-area-inset-top))] rounded-xl border border-[#ff3df0] bg-gradient-to-r from-[#ff3df0]/30 to-[#21e6ff]/30 px-[18px] py-3 font-display text-[13px] font-bold tracking-wide text-white shadow-[0_0_16px_#ff3df0] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-cyan-300"
         >
           🚀 TAKE OFF
         </button>
@@ -67,7 +67,7 @@ export function DetailPanel({
 
       {/* First-land tip — once ever, just below the button. */}
       {showTip && (
-        <div className="pointer-events-auto absolute left-[calc(1rem+env(safe-area-inset-left))] top-[calc(4.5rem+env(safe-area-inset-top))] flex max-w-[220px] items-start gap-2 rounded-xl border border-[#21e6ff]/55 bg-[#08081a]/92 px-3 py-2.5 text-xs text-[#cfe6f5] shadow-[0_0_18px_rgba(33,230,255,.3)] backdrop-blur-md">
+        <div className="pointer-events-auto absolute z-10 left-[calc(1rem+env(safe-area-inset-left))] top-[calc(4.5rem+env(safe-area-inset-top))] flex max-w-[220px] items-start gap-2 rounded-xl border border-[#21e6ff]/55 bg-[#08081a]/92 px-3 py-2.5 text-xs text-[#cfe6f5] shadow-[0_0_18px_rgba(33,230,255,.3)] backdrop-blur-md">
           <span>Done exploring? Take off to head back to space.</span>
           <button
             type="button"
