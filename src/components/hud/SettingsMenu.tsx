@@ -1,5 +1,5 @@
 'use client';
-import {useEffect, useState} from 'react';
+import {useEffect, useRef, useState} from 'react';
 
 /** The two settings rows, reused by the desktop popover and the mobile menu. */
 export function SettingsControls({
@@ -44,18 +44,26 @@ export function SettingsMenu(props: {
   onReplayTour: () => void;
 }) {
   const [open, setOpen] = useState(false);
+  const ref = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     if (!open) return;
     const onKey = (e: KeyboardEvent) => {
       if (e.key === 'Escape') setOpen(false);
     };
+    const onDown = (e: MouseEvent) => {
+      if (!ref.current?.contains(e.target as Node)) setOpen(false);
+    };
     window.addEventListener('keydown', onKey);
-    return () => window.removeEventListener('keydown', onKey);
+    document.addEventListener('mousedown', onDown);
+    return () => {
+      window.removeEventListener('keydown', onKey);
+      document.removeEventListener('mousedown', onDown);
+    };
   }, [open]);
 
   return (
-    <div className="relative">
+    <div className="relative" ref={ref}>
       <button
         type="button"
         aria-label="Settings"
@@ -67,7 +75,14 @@ export function SettingsMenu(props: {
       </button>
       {open && (
         <div className="absolute right-0 top-11 z-40 w-60 rounded-2xl border border-[#21e6ff]/40 bg-[#08081a]/95 p-3 shadow-[0_0_30px_rgba(33,230,255,.3)] backdrop-blur-md">
-          <SettingsControls {...props} />
+          <SettingsControls
+            shipMinigameEnabled={props.shipMinigameEnabled}
+            onToggleShipMinigame={props.onToggleShipMinigame}
+            onReplayTour={() => {
+              setOpen(false);
+              props.onReplayTour();
+            }}
+          />
         </div>
       )}
     </div>

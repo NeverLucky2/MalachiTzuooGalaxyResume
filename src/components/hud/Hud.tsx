@@ -55,6 +55,7 @@ export function Hud({
             <StarmapLegend nav={nav} dispatch={dispatch} />
           </div>
           <SettingsMenu
+            key={nav.landed ? 'landed' : 'flying'}
             shipMinigameEnabled={shipMinigameEnabled}
             onToggleShipMinigame={onToggleShipMinigame}
             onReplayTour={onReplayTour}

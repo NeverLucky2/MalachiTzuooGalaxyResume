@@ -14,5 +14,14 @@ describe('SettingsMenu (desktop)', () => {
     expect(onToggle).toHaveBeenCalledTimes(1);
     fireEvent.click(screen.getByRole('button', {name: /replay walkthrough/i}));
     expect(onReplay).toHaveBeenCalledTimes(1);
+    expect(screen.queryByRole('switch', {name: /ship mini-game/i})).toBeNull();
+  });
+
+  it('closes on outside click', () => {
+    render(<SettingsMenu shipMinigameEnabled={true} onToggleShipMinigame={vi.fn()} onReplayTour={vi.fn()} />);
+    fireEvent.click(screen.getByRole('button', {name: /settings/i}));
+    expect(screen.getByRole('switch', {name: /ship mini-game/i})).toBeInTheDocument();
+    fireEvent.mouseDown(document.body);
+    expect(screen.queryByRole('switch', {name: /ship mini-game/i})).toBeNull();
   });
 });
