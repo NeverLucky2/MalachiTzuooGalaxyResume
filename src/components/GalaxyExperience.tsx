@@ -5,6 +5,8 @@ import {detectCaps, shouldUse3D} from '@/lib/capabilities';
 import {initialNav, navReducer} from '@/lib/navigation';
 import {RESUME_HEADING_ID} from '@/components/fallback/FallbackResume';
 import {AsteroidGame} from '@/components/minigame/AsteroidGame';
+import {getEquippedShip, setEquippedShip as persistEquippedShip} from '@/lib/prefs';
+import type {ShipVariantId} from '@/lib/ships';
 
 const Scene = dynamic(() => import('@/components/three/Scene').then(m => m.Scene), {ssr: false});
 
@@ -53,6 +55,12 @@ export function GalaxyExperience() {
 
   const openMinigame = () => setMinigameOpen(true);
 
+  const [equippedShip, setEquippedShip] = useState<ShipVariantId>(() => getEquippedShip());
+  useEffect(() => {
+    persistEquippedShip(equippedShip);
+  }, [equippedShip]);
+  const equipInterceptor = () => setEquippedShip('interceptor');
+
   if (mode === 'galaxy') {
     return (
       <>
@@ -63,8 +71,15 @@ export function GalaxyExperience() {
           reducedMotion={caps.reducedMotion}
           paused={minigameOpen}
           onLaunchMinigame={openMinigame}
+          equippedShip={equippedShip}
         />
-        {minigameOpen && <AsteroidGame onExit={() => setMinigameOpen(false)} />}
+        {minigameOpen && (
+          <AsteroidGame
+            onExit={() => setMinigameOpen(false)}
+            equippedShip={equippedShip}
+            onUnlockInterceptor={equipInterceptor}
+          />
+        )}
       </>
     );
   }
