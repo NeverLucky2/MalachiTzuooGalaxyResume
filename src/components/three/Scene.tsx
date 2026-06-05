@@ -2,6 +2,7 @@
 import {useCallback, useEffect, useRef, useState} from 'react';
 import {Canvas} from '@react-three/fiber';
 import type {NavState, NavAction} from '@/lib/navigation';
+import type {ShipVariantId} from '@/lib/ships';
 import {PLANETS} from '@/data/planets';
 import {createMotionState} from '@/lib/motion';
 import {useGalaxyControls} from '@/hooks/useGalaxyControls';
@@ -26,6 +27,7 @@ export function Scene({
   reducedMotion = false,
   paused = false,
   onLaunchMinigame,
+  equippedShip = 'default',
 }: {
   nav: NavState;
   dispatch: React.Dispatch<NavAction>;
@@ -34,6 +36,7 @@ export function Scene({
   reducedMotion?: boolean;
   paused?: boolean;
   onLaunchMinigame?: () => void;
+  equippedShip?: ShipVariantId;
 }) {
   const positionsRef = useRef<[number, number, number][]>(PLANETS.map(() => [0, 0, 0]));
   // Shared motion state (travelT, from-snapshots, look/ship pos, free-look) that
@@ -108,7 +111,7 @@ export function Scene({
               is the sole owner of trip-start — it must snapshot motion.shipFrom
               from the ship's OLD position before Ship moves it. See CameraRig.tsx. */}
           <CameraRig nav={nav} positionsRef={positionsRef} motion={motion.current} compact={isCompact} />
-          <Ship nav={nav} positionsRef={positionsRef} motion={motion.current} onLaunch={shipMinigame ? onLaunchMinigame : undefined} />
+          <Ship nav={nav} positionsRef={positionsRef} motion={motion.current} onLaunch={shipMinigame ? onLaunchMinigame : undefined} variant={equippedShip} />
           <PlanetLabels
             current={nav.current}
             landed={nav.landed}

@@ -11,7 +11,8 @@ import {
   type MotionState,
 } from '@/lib/motion';
 import type {NavState} from '@/lib/navigation';
-import {ShipModel} from './ShipModel';
+import type {ShipVariantId} from '@/lib/ships';
+import {ShipVariant} from './ShipVariant';
 
 const FWD = new THREE.Vector3(0, 0, 1);
 
@@ -32,11 +33,13 @@ export function Ship({
   positionsRef,
   motion,
   onLaunch,
+  variant = 'default',
 }: {
   nav: NavState;
   positionsRef: PositionsRef;
   motion: MotionState;
   onLaunch?: () => void;
+  variant?: ShipVariantId;
 }) {
   const shipRef = useRef<THREE.Group>(null);
   const prevShipPos = useRef(new THREE.Vector3());
@@ -94,7 +97,7 @@ export function Ship({
 
   return (
     <group ref={shipRef}>
-      <ShipModel />
+      <ShipVariant variant={variant} />
       {onLaunch && (
         <mesh
           name="minigame-launch"
