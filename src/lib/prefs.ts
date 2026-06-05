@@ -34,3 +34,4 @@ export const setShipMinigameEnabled = (on: boolean) => writeBool(SHIP_MINIGAME_K
 
 export const isTakeoffTipSeen = () => readBool(TAKEOFF_TIP_KEY, false);
 export const setTakeoffTipSeen = (seen: boolean) => writeBool(TAKEOFF_TIP_KEY, seen);
+

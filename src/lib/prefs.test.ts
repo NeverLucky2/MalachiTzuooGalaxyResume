@@ -28,5 +28,7 @@ describe('prefs', () => {
     expect(isTakeoffTipSeen()).toBe(false);
     setTakeoffTipSeen(true);
     expect(isTakeoffTipSeen()).toBe(true);
+    setTakeoffTipSeen(false);
+    expect(isTakeoffTipSeen()).toBe(false);
   });
 });
