@@ -46,7 +46,7 @@ export function AsteroidGame({onExit}: {onExit: () => void}) {
   return (
     <div
       ref={containerRef}
-      className="fixed inset-0 z-50 touch-none bg-[#04030c]"
+      className="fixed left-0 top-0 z-50 h-[100dvh] w-[100vw] touch-none bg-[#04030c]"
       onPointerMove={(e) => updatePointer(e.clientX, e.clientY)}
       onPointerDown={(e) => updatePointer(e.clientX, e.clientY)}
     >

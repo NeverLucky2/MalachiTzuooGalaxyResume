@@ -23,10 +23,23 @@ describe('GameHud', () => {
     expect(screen.getByText(/500/)).toBeInTheDocument();
     fireEvent.click(screen.getByRole('button', {name: /retry/i}));
     fireEvent.click(screen.getByRole('button', {name: /change difficulty/i}));
-    // Two Exit buttons in the over phase (top-left "✕ Exit" + card "Exit"); click the card's (last in DOM).
+    // Two Exit buttons in the over phase (top-left round ← + card "Exit"); click the card's (last in DOM).
     fireEvent.click(screen.getAllByRole('button', {name: /exit/i}).at(-1)!);
     expect(onRetry).toHaveBeenCalledTimes(1);
     expect(onMenu).toHaveBeenCalledTimes(1);
+    expect(onExit).toHaveBeenCalledTimes(1);
+  });
+
+  it('back button is reachable during play and calls onExit', () => {
+    const onExit = vi.fn();
+    const playing: import('@/lib/minigame/gameState').GameState = {
+      phase: 'playing',
+      difficulty: 'normal',
+      score: 0,
+      best: 0,
+    };
+    render(<GameHud state={playing} onStart={vi.fn()} onRetry={vi.fn()} onMenu={vi.fn()} onExit={onExit} />);
+    fireEvent.click(screen.getByRole('button', {name: /exit/i}));
     expect(onExit).toHaveBeenCalledTimes(1);
   });
 });

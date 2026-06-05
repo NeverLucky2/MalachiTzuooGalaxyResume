@@ -24,14 +24,15 @@ export function GameHud({
 }) {
   return (
     <div className="pointer-events-none absolute inset-0 z-10 text-[#e7f6ff]">
-      {/* Exit is always reachable, top-left. */}
+      {/* Back is always reachable, top-left. Round icon keeps the run uncluttered;
+          generous top offset + solid bg so it isn't lost under mobile browser chrome. */}
       <button
         type="button"
         onClick={onExit}
         aria-label="Exit game"
-        className="pointer-events-auto absolute z-20 left-[calc(12px+env(safe-area-inset-left))] top-[calc(12px+env(safe-area-inset-top))] rounded-full border border-[#21e6ff]/50 bg-[#0a0a1f]/70 px-3 py-2 font-display text-xs text-cyan-200 backdrop-blur-md focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-cyan-300"
+        className="pointer-events-auto absolute z-20 left-[calc(14px+env(safe-area-inset-left))] top-[calc(14px+env(safe-area-inset-top))] flex h-11 w-11 items-center justify-center rounded-full border border-[#ff3df0] bg-[#0a0a1f]/85 text-xl text-[#ff9cf0] shadow-[0_0_16px_rgba(255,61,240,.5)] backdrop-blur-md focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-cyan-300"
       >
-        ✕ Exit
+        ←
       </button>
 
       {state.phase === 'menu' && (
