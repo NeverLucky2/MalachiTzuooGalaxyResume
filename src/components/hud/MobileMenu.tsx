@@ -4,6 +4,7 @@ import {PLANETS} from '@/data/planets';
 import {CONTENT} from '@/data/content';
 import type {ContentBlock} from '@/data/types';
 import type {NavState, NavAction} from '@/lib/navigation';
+import type {ShipVariantId} from '@/lib/ships';
 import {SettingsControls} from './SettingsMenu';
 
 // Reuse the résumé section's PDF download (DRY — single source of the href/label).
@@ -23,6 +24,9 @@ export function MobileMenu({
   shipMinigameEnabled = true,
   onToggleShipMinigame = () => {},
   onReplayTour = () => {},
+  interceptorUnlocked = false,
+  equippedShip = 'default',
+  onEquipShip = () => {},
 }: {
   nav: NavState;
   dispatch: React.Dispatch<NavAction>;
@@ -30,6 +34,9 @@ export function MobileMenu({
   shipMinigameEnabled?: boolean;
   onToggleShipMinigame?: () => void;
   onReplayTour?: () => void;
+  interceptorUnlocked?: boolean;
+  equippedShip?: ShipVariantId;
+  onEquipShip?: (id: ShipVariantId) => void;
 }) {
   const [open, setOpen] = useState(false);
 
@@ -119,6 +126,9 @@ export function MobileMenu({
                 setOpen(false);
                 onReplayTour();
               }}
+              interceptorUnlocked={interceptorUnlocked}
+              equippedShip={equippedShip}
+              onEquipShip={onEquipShip}
             />
 
             <div className="mt-auto flex gap-3">

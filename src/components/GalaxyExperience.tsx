@@ -6,7 +6,9 @@ import {initialNav, navReducer} from '@/lib/navigation';
 import {RESUME_HEADING_ID} from '@/components/fallback/FallbackResume';
 import {AsteroidGame} from '@/components/minigame/AsteroidGame';
 import {getEquippedShip, setEquippedShip as persistEquippedShip} from '@/lib/prefs';
+import {isInterceptorUnlocked} from '@/lib/ships';
 import type {ShipVariantId} from '@/lib/ships';
+import {loadBest} from '@/lib/minigame/score';
 
 const Scene = dynamic(() => import('@/components/three/Scene').then(m => m.Scene), {ssr: false});
 
@@ -60,6 +62,7 @@ export function GalaxyExperience() {
     persistEquippedShip(equippedShip);
   }, [equippedShip]);
   const equipInterceptor = () => setEquippedShip('interceptor');
+  const interceptorUnlocked = isInterceptorUnlocked(loadBest());
 
   if (mode === 'galaxy') {
     return (
@@ -72,6 +75,8 @@ export function GalaxyExperience() {
           paused={minigameOpen}
           onLaunchMinigame={openMinigame}
           equippedShip={equippedShip}
+          onEquipShip={setEquippedShip}
+          interceptorUnlocked={interceptorUnlocked}
         />
         {minigameOpen && (
           <AsteroidGame

@@ -28,6 +28,8 @@ export function Scene({
   paused = false,
   onLaunchMinigame,
   equippedShip = 'default',
+  interceptorUnlocked = false,
+  onEquipShip = () => {},
 }: {
   nav: NavState;
   dispatch: React.Dispatch<NavAction>;
@@ -37,6 +39,8 @@ export function Scene({
   paused?: boolean;
   onLaunchMinigame?: () => void;
   equippedShip?: ShipVariantId;
+  interceptorUnlocked?: boolean;
+  onEquipShip?: (id: ShipVariantId) => void;
 }) {
   const positionsRef = useRef<[number, number, number][]>(PLANETS.map(() => [0, 0, 0]));
   // Shared motion state (travelT, from-snapshots, look/ship pos, free-look) that
@@ -129,6 +133,9 @@ export function Scene({
           shipMinigameEnabled={shipMinigame}
           onToggleShipMinigame={toggleShipMinigame}
           onReplayTour={replayTour}
+          interceptorUnlocked={interceptorUnlocked}
+          equippedShip={equippedShip}
+          onEquipShip={onEquipShip}
         />
       ) : (
         <Hud
@@ -139,6 +146,9 @@ export function Scene({
           shipMinigameEnabled={shipMinigame}
           onToggleShipMinigame={toggleShipMinigame}
           onReplayTour={replayTour}
+          interceptorUnlocked={interceptorUnlocked}
+          equippedShip={equippedShip}
+          onEquipShip={onEquipShip}
         />
       )}
       {showTour && !paused && <Walkthrough compact={isCompact} onClose={closeTour} />}

@@ -1,15 +1,22 @@
 'use client';
 import {useEffect, useRef, useState} from 'react';
+import {SHIP_VARIANTS, type ShipVariantId} from '@/lib/ships';
 
 /** The two settings rows, reused by the desktop popover and the mobile menu. */
 export function SettingsControls({
   shipMinigameEnabled,
   onToggleShipMinigame,
   onReplayTour,
+  interceptorUnlocked = false,
+  equippedShip = 'default',
+  onEquipShip = () => {},
 }: {
   shipMinigameEnabled: boolean;
   onToggleShipMinigame: () => void;
   onReplayTour: () => void;
+  interceptorUnlocked?: boolean;
+  equippedShip?: ShipVariantId;
+  onEquipShip?: (id: ShipVariantId) => void;
 }) {
   return (
     <div className="flex flex-col gap-2">
@@ -33,6 +40,29 @@ export function SettingsControls({
       >
         ↻ Replay walkthrough
       </button>
+
+      {interceptorUnlocked && (
+        <div className="rounded-xl border border-[#21e6ff]/40 bg-[#0a0a1f]/60 px-3 py-2.5">
+          <div className="mb-1.5 font-display text-[10px] uppercase tracking-[1.5px] text-[#7fb0c9]">Ship</div>
+          <div className="flex gap-2">
+            {SHIP_VARIANTS.map((v) => (
+              <button
+                key={v.id}
+                type="button"
+                aria-pressed={equippedShip === v.id}
+                onClick={() => onEquipShip(v.id)}
+                className={`flex-1 rounded-lg border px-2 py-2 text-xs font-display ${
+                  equippedShip === v.id
+                    ? 'border-[#21e6ff] bg-[#21e6ff]/15 text-cyan-100'
+                    : 'border-[#21e6ff]/40 text-[#9fb6cf]'
+                } focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-cyan-300`}
+              >
+                {v.name}
+              </button>
+            ))}
+          </div>
+        </div>
+      )}
     </div>
   );
 }
@@ -42,6 +72,9 @@ export function SettingsMenu(props: {
   shipMinigameEnabled: boolean;
   onToggleShipMinigame: () => void;
   onReplayTour: () => void;
+  interceptorUnlocked?: boolean;
+  equippedShip?: ShipVariantId;
+  onEquipShip?: (id: ShipVariantId) => void;
 }) {
   const [open, setOpen] = useState(false);
   const ref = useRef<HTMLDivElement>(null);
@@ -82,6 +115,9 @@ export function SettingsMenu(props: {
               setOpen(false);
               props.onReplayTour();
             }}
+            interceptorUnlocked={props.interceptorUnlocked}
+            equippedShip={props.equippedShip}
+            onEquipShip={props.onEquipShip}
           />
         </div>
       )}

@@ -1,6 +1,7 @@
 'use client';
 import {PLANETS} from '@/data/planets';
 import type {NavState, NavAction} from '@/lib/navigation';
+import type {ShipVariantId} from '@/lib/ships';
 import {StarmapLegend} from './StarmapLegend';
 import {DetailPanel} from './DetailPanel';
 import {SettingsMenu} from './SettingsMenu';
@@ -20,6 +21,9 @@ export function Hud({
   shipMinigameEnabled = true,
   onToggleShipMinigame = () => {},
   onReplayTour = () => {},
+  interceptorUnlocked = false,
+  equippedShip = 'default',
+  onEquipShip = () => {},
 }: {
   nav: NavState;
   dispatch: React.Dispatch<NavAction>;
@@ -29,6 +33,9 @@ export function Hud({
   shipMinigameEnabled?: boolean;
   onToggleShipMinigame?: () => void;
   onReplayTour?: () => void;
+  interceptorUnlocked?: boolean;
+  equippedShip?: ShipVariantId;
+  onEquipShip?: (id: ShipVariantId) => void;
 }) {
   const n = PLANETS.length;
   const atFirst = nav.current === 0;
@@ -65,6 +72,9 @@ export function Hud({
             shipMinigameEnabled={shipMinigameEnabled}
             onToggleShipMinigame={onToggleShipMinigame}
             onReplayTour={onReplayTour}
+            interceptorUnlocked={interceptorUnlocked}
+            equippedShip={equippedShip}
+            onEquipShip={onEquipShip}
           />
         </div>
       </div>

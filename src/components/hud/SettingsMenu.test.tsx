@@ -1,6 +1,6 @@
 import {describe, it, expect, vi} from 'vitest';
 import {render, screen, fireEvent} from '@testing-library/react';
-import {SettingsMenu} from './SettingsMenu';
+import {SettingsMenu, SettingsControls} from './SettingsMenu';
 
 describe('SettingsMenu (desktop)', () => {
   it('opens from the gear and exposes the ship toggle + replay', () => {
@@ -23,5 +23,21 @@ describe('SettingsMenu (desktop)', () => {
     expect(screen.getByRole('switch', {name: /ship mini-game/i})).toBeInTheDocument();
     fireEvent.mouseDown(document.body);
     expect(screen.queryByRole('switch', {name: /ship mini-game/i})).toBeNull();
+  });
+});
+
+describe('SettingsControls — ship switcher', () => {
+  const base = {shipMinigameEnabled: true, onToggleShipMinigame: vi.fn(), onReplayTour: vi.fn()};
+
+  it('hides the ship switcher until the interceptor is unlocked', () => {
+    render(<SettingsControls {...base} interceptorUnlocked={false} equippedShip="default" onEquipShip={vi.fn()} />);
+    expect(screen.queryByRole('button', {name: /interceptor/i})).toBeNull();
+  });
+
+  it('shows the switcher when unlocked and equips on click', () => {
+    const onEquip = vi.fn();
+    render(<SettingsControls {...base} interceptorUnlocked={true} equippedShip="default" onEquipShip={onEquip} />);
+    fireEvent.click(screen.getByRole('button', {name: /interceptor/i}));
+    expect(onEquip).toHaveBeenCalledWith('interceptor');
   });
 });
