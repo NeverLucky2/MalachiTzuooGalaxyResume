@@ -1,6 +1,8 @@
 'use client';
 import type {Difficulty} from '@/lib/minigame/difficulty';
 import type {GameState} from '@/lib/minigame/gameState';
+import {INTERCEPTOR_UNLOCK} from '@/lib/ships';
+import {InterceptorIcon} from './InterceptorIcon';
 
 const DIFFICULTIES: Difficulty[] = ['easy', 'normal', 'hard'];
 
@@ -15,12 +17,14 @@ export function GameHud({
   onRetry,
   onMenu,
   onExit,
+  interceptorUnlocked = false,
 }: {
   state: GameState;
   onStart: (d: Difficulty) => void;
   onRetry: () => void;
   onMenu: () => void;
   onExit: () => void;
+  interceptorUnlocked?: boolean;
 }) {
   return (
     <div className="pointer-events-none absolute inset-0 z-10 text-[#e7f6ff]">
@@ -54,6 +58,17 @@ export function GameHud({
               </button>
             ))}
           </div>
+          {interceptorUnlocked ? (
+            <p className="font-display text-xs text-cyan-200">✓ Interceptor unlocked — switch ships in Settings</p>
+          ) : (
+            <div className="flex items-center gap-3 rounded-xl border border-[#21e6ff]/30 bg-[#0a0a1f]/60 px-4 py-2 text-[#9fb6cf]">
+              <InterceptorIcon className="h-8 w-8 flex-none text-[#21e6ff] opacity-40" />
+              <span className="text-xs">
+                Score {INTERCEPTOR_UNLOCK} to unlock the Interceptor
+                {state.best > 0 ? ` · best ${state.best}` : ''}
+              </span>
+            </div>
+          )}
         </div>
       )}
 
@@ -64,6 +79,15 @@ export function GameHud({
             <div className="text-4xl font-black tabular-nums">{state.score}</div>
             <div className="mt-1 text-sm text-cyan-200">BEST {state.best}</div>
           </div>
+          {state.justUnlocked ? (
+            <p className="font-display text-sm font-bold text-[#21e6ff] [text-shadow:0_0_10px_rgba(33,230,255,.6)]">
+              🎉 Interceptor unlocked — equipped!
+            </p>
+          ) : !interceptorUnlocked ? (
+            <p className="text-xs text-[#9fb6cf]">
+              Best {state.best} · {INTERCEPTOR_UNLOCK} to unlock the Interceptor
+            </p>
+          ) : null}
           <div className="mt-2 flex flex-wrap justify-center gap-3">
             <button type="button" onClick={onRetry} className="rounded-xl border border-[#ff3df0] bg-gradient-to-r from-[#ff3df0]/30 to-[#21e6ff]/30 px-5 py-3 font-display text-sm font-bold text-white shadow-[0_0_16px_#ff3df0] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-cyan-300">
               ↻ Retry

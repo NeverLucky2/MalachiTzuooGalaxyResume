@@ -20,7 +20,7 @@ describe('GameHud', () => {
     const over = {phase: 'over' as const, difficulty: 'normal' as const, score: 300, best: 500};
     render(<GameHud state={over} onStart={vi.fn()} onRetry={onRetry} onMenu={onMenu} onExit={onExit} />);
     expect(screen.getByText(/300/)).toBeInTheDocument();
-    expect(screen.getByText(/500/)).toBeInTheDocument();
+    expect(screen.getAllByText(/500/)[0]).toBeInTheDocument();
     fireEvent.click(screen.getByRole('button', {name: /retry/i}));
     fireEvent.click(screen.getByRole('button', {name: /change difficulty/i}));
     // Two Exit buttons in the over phase (top-left round ← + card "Exit"); click the card's (last in DOM).
@@ -41,5 +41,27 @@ describe('GameHud', () => {
     render(<GameHud state={playing} onStart={vi.fn()} onRetry={vi.fn()} onMenu={vi.fn()} onExit={onExit} />);
     fireEvent.click(screen.getByRole('button', {name: /exit/i}));
     expect(onExit).toHaveBeenCalledTimes(1);
+  });
+});
+
+describe('GameHud — interceptor unlock UI', () => {
+  it('menu shows the locked teaser when not unlocked', () => {
+    render(
+      <GameHud state={initialGameState(740)} onStart={vi.fn()} onRetry={vi.fn()} onMenu={vi.fn()} onExit={vi.fn()} interceptorUnlocked={false} />,
+    );
+    expect(screen.getByText(/1000 to unlock the interceptor/i)).toBeInTheDocument();
+  });
+
+  it('menu shows the unlocked note when unlocked', () => {
+    render(
+      <GameHud state={initialGameState(1500)} onStart={vi.fn()} onRetry={vi.fn()} onMenu={vi.fn()} onExit={vi.fn()} interceptorUnlocked={true} />,
+    );
+    expect(screen.getByText(/interceptor unlocked/i)).toBeInTheDocument();
+  });
+
+  it('game-over celebrates a fresh unlock', () => {
+    const over = {phase: 'over' as const, difficulty: 'normal' as const, score: 1200, best: 1200, justUnlocked: true};
+    render(<GameHud state={over} onStart={vi.fn()} onRetry={vi.fn()} onMenu={vi.fn()} onExit={vi.fn()} interceptorUnlocked={true} />);
+    expect(screen.getByText(/interceptor unlocked — equipped/i)).toBeInTheDocument();
   });
 });
