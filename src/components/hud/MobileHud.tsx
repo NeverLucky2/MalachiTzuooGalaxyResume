@@ -13,17 +13,23 @@ export function MobileHud({
   nav,
   dispatch,
   onSkip,
+  shipMinigameEnabled = true,
+  onToggleShipMinigame = () => {},
+  onReplayTour = () => {},
 }: {
   nav: NavState;
   dispatch: React.Dispatch<NavAction>;
   onSkip: () => void;
+  shipMinigameEnabled?: boolean;
+  onToggleShipMinigame?: () => void;
+  onReplayTour?: () => void;
 }) {
   return (
     <>
       {!nav.landed && (
         <>
           <IdentityChip />
-          <MobileMenu nav={nav} dispatch={dispatch} onSkip={onSkip} />
+          <MobileMenu nav={nav} dispatch={dispatch} onSkip={onSkip} shipMinigameEnabled={shipMinigameEnabled} onToggleShipMinigame={onToggleShipMinigame} onReplayTour={onReplayTour} />
           <ThumbDock nav={nav} dispatch={dispatch} />
         </>
       )}

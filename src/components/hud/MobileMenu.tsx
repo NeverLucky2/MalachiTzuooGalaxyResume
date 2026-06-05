@@ -4,6 +4,7 @@ import {PLANETS} from '@/data/planets';
 import {CONTENT} from '@/data/content';
 import type {ContentBlock} from '@/data/types';
 import type {NavState, NavAction} from '@/lib/navigation';
+import {SettingsControls} from './SettingsMenu';
 
 // Reuse the résumé section's PDF download (DRY — single source of the href/label).
 const PDF = CONTENT.resume.find(
@@ -19,10 +20,16 @@ export function MobileMenu({
   nav,
   dispatch,
   onSkip,
+  shipMinigameEnabled = true,
+  onToggleShipMinigame = () => {},
+  onReplayTour = () => {},
 }: {
   nav: NavState;
   dispatch: React.Dispatch<NavAction>;
   onSkip: () => void;
+  shipMinigameEnabled?: boolean;
+  onToggleShipMinigame?: () => void;
+  onReplayTour?: () => void;
 }) {
   const [open, setOpen] = useState(false);
 
@@ -101,6 +108,18 @@ export function MobileMenu({
                 </button>
               ))}
             </nav>
+
+            <div className="font-display text-[10px] uppercase tracking-[2px] text-[#7fb0c9]">
+              ◇ Settings
+            </div>
+            <SettingsControls
+              shipMinigameEnabled={shipMinigameEnabled}
+              onToggleShipMinigame={onToggleShipMinigame}
+              onReplayTour={() => {
+                setOpen(false);
+                onReplayTour();
+              }}
+            />
 
             <div className="mt-auto flex gap-3">
               <button

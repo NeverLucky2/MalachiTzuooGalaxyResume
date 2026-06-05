@@ -3,6 +3,7 @@ import {PLANETS} from '@/data/planets';
 import type {NavState, NavAction} from '@/lib/navigation';
 import {StarmapLegend} from './StarmapLegend';
 import {DetailPanel} from './DetailPanel';
+import {SettingsMenu} from './SettingsMenu';
 
 /**
  * Full DOM overlay HUD (rendered as a sibling of <Canvas>, NOT inside it).
@@ -16,12 +17,18 @@ export function Hud({
   dispatch,
   onSkip,
   boost = false,
+  shipMinigameEnabled = true,
+  onToggleShipMinigame = () => {},
+  onReplayTour = () => {},
 }: {
   nav: NavState;
   dispatch: React.Dispatch<NavAction>;
   onSkip: () => void;
   /** Reflects the live Shift-boost state for the speed hint. */
   boost?: boolean;
+  shipMinigameEnabled?: boolean;
+  onToggleShipMinigame?: () => void;
+  onReplayTour?: () => void;
 }) {
   const n = PLANETS.length;
   const atFirst = nav.current === 0;
@@ -43,8 +50,15 @@ export function Hud({
           <Chip>CLASS · SOFTWARE ENGINEER</Chip>
           <Chip>🛰 AWS CERTIFIED</Chip>
         </div>
-        <div className="pointer-events-auto" data-tour="menu">
-          <StarmapLegend nav={nav} dispatch={dispatch} />
+        <div className="pointer-events-auto flex items-start gap-2">
+          <div data-tour="menu">
+            <StarmapLegend nav={nav} dispatch={dispatch} />
+          </div>
+          <SettingsMenu
+            shipMinigameEnabled={shipMinigameEnabled}
+            onToggleShipMinigame={onToggleShipMinigame}
+            onReplayTour={onReplayTour}
+          />
         </div>
       </div>
 

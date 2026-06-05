@@ -30,3 +30,26 @@ describe('MobileMenu', () => {
     expect(onSkip).toHaveBeenCalledTimes(1);
   });
 });
+
+describe('MobileMenu — settings', () => {
+  it('shows the ship toggle state and fires onToggleShipMinigame', () => {
+    const onToggle = vi.fn();
+    render(
+      <MobileMenu nav={initialNav()} dispatch={vi.fn()} onSkip={vi.fn()}
+        shipMinigameEnabled={true} onToggleShipMinigame={onToggle} onReplayTour={vi.fn()} />,
+    );
+    fireEvent.click(screen.getByRole('button', {name: /menu/i}));
+    const toggle = screen.getByRole('switch', {name: /ship mini-game/i});
+    expect(toggle).toHaveAttribute('aria-checked', 'true');
+    fireEvent.click(toggle);
+    expect(onToggle).toHaveBeenCalledTimes(1);
+  });
+
+  it('replay button fires onReplayTour', () => {
+    const onReplay = vi.fn();
+    render(<MobileMenu nav={initialNav()} dispatch={vi.fn()} onSkip={vi.fn()} onReplayTour={onReplay} />);
+    fireEvent.click(screen.getByRole('button', {name: /menu/i}));
+    fireEvent.click(screen.getByRole('button', {name: /replay walkthrough/i}));
+    expect(onReplay).toHaveBeenCalledTimes(1);
+  });
+});

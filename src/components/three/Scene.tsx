@@ -17,7 +17,7 @@ import {CameraRig} from './CameraRig';
 import {Hud} from '@/components/hud/Hud';
 import {PlanetLabels} from '@/components/hud/PlanetLabels';
 import {Walkthrough} from '@/components/hud/Walkthrough';
-import {isTourDone} from '@/lib/prefs';
+import {isTourDone, setTourDone, isShipMinigameEnabled, setShipMinigameEnabled} from '@/lib/prefs';
 
 export function Scene({
   nav,
@@ -66,6 +66,19 @@ export function Scene({
   const [showTour, setShowTour] = useState(() => !isTourDone());
   const closeTour = useCallback(() => setShowTour(false), []);
 
+  const replayTour = useCallback(() => {
+    setTourDone(false);
+    setShowTour(true);
+  }, []);
+
+  // Ship-tap mini-game toggle (persisted). Persisting in an effect is fine — only
+  // setState in an effect body is disallowed, not a localStorage write.
+  const [shipMinigame, setShipMinigame] = useState(() => isShipMinigameEnabled());
+  useEffect(() => {
+    setShipMinigameEnabled(shipMinigame);
+  }, [shipMinigame]);
+  const toggleShipMinigame = useCallback(() => setShipMinigame((v) => !v), []);
+
   return (
     <>
       {/* The canvas is purely decorative — all content lives in the HUD (DOM) and
@@ -95,7 +108,7 @@ export function Scene({
               is the sole owner of trip-start — it must snapshot motion.shipFrom
               from the ship's OLD position before Ship moves it. See CameraRig.tsx. */}
           <CameraRig nav={nav} positionsRef={positionsRef} motion={motion.current} compact={isCompact} />
-          <Ship nav={nav} positionsRef={positionsRef} motion={motion.current} onLaunch={onLaunchMinigame} />
+          <Ship nav={nav} positionsRef={positionsRef} motion={motion.current} onLaunch={shipMinigame ? onLaunchMinigame : undefined} />
           <PlanetLabels
             current={nav.current}
             landed={nav.landed}
@@ -106,9 +119,24 @@ export function Scene({
       {/* DOM overlay HUD — sibling of the Canvas, NOT inside it. Compact (touch)
           devices and narrow windows get the MobileHud; desktop keeps the full Hud. */}
       {isCompact ? (
-        <MobileHud nav={nav} dispatch={dispatch} onSkip={onSkip} />
+        <MobileHud
+          nav={nav}
+          dispatch={dispatch}
+          onSkip={onSkip}
+          shipMinigameEnabled={shipMinigame}
+          onToggleShipMinigame={toggleShipMinigame}
+          onReplayTour={replayTour}
+        />
       ) : (
-        <Hud nav={nav} dispatch={dispatch} onSkip={onSkip} boost={boost} />
+        <Hud
+          nav={nav}
+          dispatch={dispatch}
+          onSkip={onSkip}
+          boost={boost}
+          shipMinigameEnabled={shipMinigame}
+          onToggleShipMinigame={toggleShipMinigame}
+          onReplayTour={replayTour}
+        />
       )}
       {showTour && !paused && <Walkthrough compact={isCompact} onClose={closeTour} />}
     </>
