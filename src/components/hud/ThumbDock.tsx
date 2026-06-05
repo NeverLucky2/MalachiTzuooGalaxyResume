@@ -29,10 +29,10 @@ export function ThumbDock({
           ◀
         </DockButton>
       </div>
-      <DockButton aria-label="Land" land onClick={() => dispatch({type: 'land'})}>
+      <DockButton aria-label="Land" land dataTour="land" onClick={() => dispatch({type: 'land'})}>
         LAND
       </DockButton>
-      <DockButton aria-label="Outward" onClick={() => dispatch({type: 'next', n})} disabled={nav.current === n - 1}>
+      <DockButton aria-label="Outward" dataTour="fly" onClick={() => dispatch({type: 'next', n})} disabled={nav.current === n - 1}>
         ▶
       </DockButton>
     </div>
@@ -44,12 +44,14 @@ function DockButton({
   onClick,
   disabled,
   land,
+  dataTour,
   'aria-label': ariaLabel,
 }: {
   children: React.ReactNode;
   onClick: () => void;
   disabled?: boolean;
   land?: boolean;
+  dataTour?: string;
   'aria-label': string;
 }) {
   return (
@@ -58,6 +60,7 @@ function DockButton({
       aria-label={ariaLabel}
       onClick={onClick}
       disabled={disabled}
+      data-tour={dataTour}
       className={`pointer-events-auto rounded-2xl border py-4 text-center font-display text-base font-bold text-[#e7f6ff] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-cyan-300 disabled:opacity-35 ${
         land
           ? 'border-[#ff3df0] bg-gradient-to-r from-[#ff3df0]/30 to-[#21e6ff]/30 text-white shadow-[0_0_16px_#ff3df0]'

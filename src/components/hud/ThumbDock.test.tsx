@@ -35,3 +35,11 @@ describe('ThumbDock', () => {
     expect(dispatch).toHaveBeenCalledWith({type: 'cyclePreset'});
   });
 });
+
+describe('ThumbDock — tour anchors', () => {
+  it('tags the LAND and ▶ controls for the walkthrough', () => {
+    const {container} = render(<ThumbDock nav={initialNav()} dispatch={vi.fn()} />);
+    expect(container.querySelector('[data-tour="land"]')).not.toBeNull();
+    expect(container.querySelector('[data-tour="fly"]')).not.toBeNull();
+  });
+});

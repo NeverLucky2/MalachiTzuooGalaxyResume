@@ -3,7 +3,6 @@ import type {NavState, NavAction} from '@/lib/navigation';
 import {IdentityChip} from './IdentityChip';
 import {MobileMenu} from './MobileMenu';
 import {ThumbDock} from './ThumbDock';
-import {CoachHint} from './CoachHint';
 import {DetailPanel} from './DetailPanel';
 
 /**
@@ -26,7 +25,6 @@ export function MobileHud({
           <IdentityChip />
           <MobileMenu nav={nav} dispatch={dispatch} onSkip={onSkip} />
           <ThumbDock nav={nav} dispatch={dispatch} />
-          <CoachHint />
         </>
       )}
       <DetailPanel nav={nav} onTakeOff={() => dispatch({type: 'takeOff'})} />

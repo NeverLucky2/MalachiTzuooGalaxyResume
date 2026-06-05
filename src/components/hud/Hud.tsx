@@ -43,7 +43,7 @@ export function Hud({
           <Chip>CLASS · SOFTWARE ENGINEER</Chip>
           <Chip>🛰 AWS CERTIFIED</Chip>
         </div>
-        <div className="pointer-events-auto">
+        <div className="pointer-events-auto" data-tour="menu">
           <StarmapLegend nav={nav} dispatch={dispatch} />
         </div>
       </div>
@@ -72,10 +72,10 @@ export function Hud({
         <CtrlButton onClick={() => dispatch({type: 'prev', n})} disabled={atFirst}>
           ◀ INWARD
         </CtrlButton>
-        <CtrlButton land onClick={() => dispatch({type: 'land'})}>
+        <CtrlButton land dataTour="land" onClick={() => dispatch({type: 'land'})}>
           LAND ▾
         </CtrlButton>
-        <CtrlButton onClick={() => dispatch({type: 'next', n})} disabled={atLast}>
+        <CtrlButton dataTour="fly" onClick={() => dispatch({type: 'next', n})} disabled={atLast}>
           OUTWARD ▶
         </CtrlButton>
 
@@ -117,12 +117,14 @@ function CtrlButton({
   onClick,
   disabled,
   land,
+  dataTour,
   className = '',
 }: {
   children: React.ReactNode;
   onClick: () => void;
   disabled?: boolean;
   land?: boolean;
+  dataTour?: string;
   /** Extra utility classes (e.g. `ml-auto` to push the button to the right). */
   className?: string;
 }) {
@@ -131,6 +133,7 @@ function CtrlButton({
       type="button"
       onClick={onClick}
       disabled={disabled}
+      data-tour={dataTour}
       className={`pointer-events-auto rounded-xl border px-4 py-3 font-display text-[13px] font-bold text-[#e7f6ff] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-cyan-300 disabled:cursor-default disabled:opacity-35 disabled:shadow-none ${
         land
           ? 'border-[#ff3df0] bg-gradient-to-r from-[#ff3df0]/30 to-[#21e6ff]/30 text-white shadow-[0_0_16px_#ff3df0]'

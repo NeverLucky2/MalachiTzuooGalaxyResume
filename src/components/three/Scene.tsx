@@ -1,5 +1,5 @@
 'use client';
-import {useEffect, useRef, useState} from 'react';
+import {useCallback, useEffect, useRef, useState} from 'react';
 import {Canvas} from '@react-three/fiber';
 import type {NavState, NavAction} from '@/lib/navigation';
 import {PLANETS} from '@/data/planets';
@@ -16,6 +16,8 @@ import {Ship} from './Ship';
 import {CameraRig} from './CameraRig';
 import {Hud} from '@/components/hud/Hud';
 import {PlanetLabels} from '@/components/hud/PlanetLabels';
+import {Walkthrough} from '@/components/hud/Walkthrough';
+import {isTourDone} from '@/lib/prefs';
 
 export function Scene({
   nav,
@@ -58,6 +60,11 @@ export function Scene({
     motion: motion.current,
     compact: isCompact,
   });
+
+  // Opening walkthrough: show once (lazy init from storage; Scene is ssr:false so
+  // reading localStorage at init is safe).
+  const [showTour, setShowTour] = useState(() => !isTourDone());
+  const closeTour = useCallback(() => setShowTour(false), []);
 
   return (
     <>
@@ -103,6 +110,7 @@ export function Scene({
       ) : (
         <Hud nav={nav} dispatch={dispatch} onSkip={onSkip} boost={boost} />
       )}
+      {showTour && !paused && <Walkthrough compact={isCompact} onClose={closeTour} />}
     </>
   );
 }
