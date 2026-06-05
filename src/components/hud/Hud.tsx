@@ -43,9 +43,15 @@ export function Hud({
         }`}
       >
         <div className="pointer-events-auto flex items-center gap-3 rounded-[14px] border border-[#21e6ff]/50 bg-[#0a0a1f]/60 px-4 py-[10px] shadow-[0_0_18px_rgba(33,230,255,.35)] backdrop-blur-md">
-          <span className="bg-gradient-to-r from-[#21e6ff] to-[#ff3df0] bg-clip-text font-display text-base font-black tracking-wide text-transparent">
+          <button
+            type="button"
+            data-tour="name"
+            onClick={onSkip}
+            aria-label="Malachi Tzuoo — view résumé"
+            className="bg-gradient-to-r from-[#21e6ff] to-[#ff3df0] bg-clip-text font-display text-base font-black tracking-wide text-transparent focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-cyan-300"
+          >
             MALACHI TZUOO
-          </span>
+          </button>
           <Chip>LV.26</Chip>
           <Chip>CLASS · SOFTWARE ENGINEER</Chip>
           <Chip>🛰 AWS CERTIFIED</Chip>

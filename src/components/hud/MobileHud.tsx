@@ -28,7 +28,7 @@ export function MobileHud({
     <>
       {!nav.landed && (
         <>
-          <IdentityChip />
+          <IdentityChip onOpenResume={onSkip} />
           <MobileMenu nav={nav} dispatch={dispatch} onSkip={onSkip} shipMinigameEnabled={shipMinigameEnabled} onToggleShipMinigame={onToggleShipMinigame} onReplayTour={onReplayTour} />
           <ThumbDock nav={nav} dispatch={dispatch} />
         </>
