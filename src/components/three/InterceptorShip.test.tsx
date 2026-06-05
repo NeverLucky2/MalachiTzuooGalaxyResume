@@ -1,4 +1,3 @@
-// src/components/three/InterceptorShip.test.tsx
 import {describe, it, expect} from 'vitest';
 import ReactThreeTestRenderer from '@react-three/test-renderer';
 import {InterceptorShip} from './InterceptorShip';
