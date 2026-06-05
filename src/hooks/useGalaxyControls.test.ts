@@ -117,3 +117,39 @@ describe('useGalaxyControls — onSelect (click-to-fly) handler', () => {
     expect(dispatch).toHaveBeenCalledWith({type: 'selectAndLand', index: 4});
   });
 });
+
+describe('useGalaxyControls — free-look drag', () => {
+  let dispatch: ReturnType<typeof vi.fn>;
+  let motion: ReturnType<typeof createMotionState>;
+  beforeEach(() => {
+    dispatch = vi.fn();
+    motion = createMotionState();
+  });
+
+  // jsdom lacks a PointerEvent constructor; MouseEvent carries clientX/clientY and
+  // the listeners only read those, so it stands in for pointer events here.
+  const move = (clientX: number, clientY: number) =>
+    window.dispatchEvent(new MouseEvent('pointermove', {clientX, clientY}));
+
+  it('accumulates yaw/pitch while dragging', () => {
+    const {result} = renderHook(() =>
+      useGalaxyControls({nav: initialNav(), dispatch, motion, compact: true}),
+    );
+    act(() => result.current.onPointerDown({clientX: 100, clientY: 100}));
+    act(() => move(140, 130));
+    expect(motion.yaw).not.toBe(0);
+    expect(motion.pitch).not.toBe(0);
+  });
+
+  it('pointercancel ends the drag so later moves are ignored', () => {
+    const {result} = renderHook(() =>
+      useGalaxyControls({nav: initialNav(), dispatch, motion, compact: true}),
+    );
+    act(() => result.current.onPointerDown({clientX: 100, clientY: 100}));
+    act(() => move(140, 100));
+    const yaw = motion.yaw;
+    act(() => window.dispatchEvent(new MouseEvent('pointercancel')));
+    act(() => move(220, 100));
+    expect(motion.yaw).toBe(yaw); // unchanged after cancel
+  });
+});

@@ -63,7 +63,7 @@ export function Scene({
     <>
       {/* The canvas is purely decorative — all content lives in the HUD (DOM) and
           the SSR resume fallback. Hide it from assistive tech. */}
-      <div className="fixed inset-0 z-10" aria-hidden="true">
+      <div className="galaxy-canvas fixed inset-0 z-10" aria-hidden="true">
         <Canvas
           camera={{fov: 55, position: [0, 95, 210], near: 0.1, far: 4000}}
           dpr={[1, 2]}

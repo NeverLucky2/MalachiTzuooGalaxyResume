@@ -24,3 +24,9 @@ html {
 [data-mode='galaxy'] #resume-2d {
   display: none;
 }
+
+/* Touch devices: keep the browser from claiming galaxy-canvas drags as a page
+   scroll, which fired pointercancel mid-gesture and made free-look stutter. */
+.galaxy-canvas canvas {
+  touch-action: none;
+}
